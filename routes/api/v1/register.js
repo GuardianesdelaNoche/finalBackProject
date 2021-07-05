@@ -30,8 +30,8 @@ router.post('/', jwtAuth,
         body('role').isNumeric().withMessage('El rol debe ser numérico'),
         body('nickname').not().isEmpty().trim().escape().withMessage('El nickname es obligatorio'),
         body('password').custom(password => {   
+            
             //Validamos si la password que nos pasan están dentro de los permitidos
-            //const errorTags = Anuncio.allowedTagsEnumValidate(tags)
             if ((typeof password != 'undefined') && !passwordSchema.validate(password)){
                 console.log('Password no validado 1')
                 return false
@@ -39,12 +39,34 @@ router.post('/', jwtAuth,
                 console.log('Password validado 2 ')
                 return true
             }
-            //Si alguno de los tags no se encuentra, lanzaremos un error indicando que tags no son admitidos
-            // if (errorTags.length > 0){
-            //     throw new Error(`Tags no admitidos: ${errorTags}`);
-            // } else {
-            //     return true}
-        })
+        }),
+        body('email').custom(async email=>{
+            const resultE = await User.existsEmail(email);
+            if (resultE >0){
+                throw new Error(`Email duplicado: ${email}`);
+            } else {
+                return true
+            }
+        }).escape().withMessage('El campo email, está duplicado'),
+        
+        body('username').custom(async username=>{
+            const resultU = await User.existsUserName(username);
+            if (resultU >0){
+                throw new Error(`Username duplicado: ${username}`);
+            } else {
+                return true
+            }
+        }).escape().withMessage('El campo username, está duplicado'),
+        
+        body('nickname').custom(async nickname=>{
+            const resultN = await User.existsNickName(nickname);
+            if (resultN >0){
+                throw new Error(`Nickname duplicado: ${nickname}`);
+            } else {
+                return true
+            }
+        }).escape().withMessage('El campo nickname, está duplicado'),
+        
     ], 
  async (req, res, next) =>{
     try {

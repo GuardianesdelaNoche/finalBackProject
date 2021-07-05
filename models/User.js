@@ -31,6 +31,21 @@ userSchema.methods.comparePassword = function(passwordOriginal){
     return bcrypt.compare(passwordOriginal, this.password);
 }
 
+userSchema.statics.existsEmail = function(email){
+    const isUser = User.count({email: { $regex : new RegExp(email.toLowerCase(), "i") }, deleted:null})
+    return isUser.exec()
+}
+
+userSchema.statics.existsUserName = function(username){
+    const isUserName = User.count({username: { $regex : new RegExp(username.toLowerCase(), "i") }, deleted:null})
+    return isUserName.exec()
+}
+
+userSchema.statics.existsNickName = function(nickname){
+    const isUserNickName = User.count({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") }, deleted:null})
+    return isUserNickName.exec()
+}
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
