@@ -2,6 +2,8 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Event = require('./Events');
+var Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
     username: {type: String, unique: true, index: true,required: true},
@@ -11,11 +13,11 @@ const userSchema = mongoose.Schema({
     postal_code: {type: String, index: true},
     country: { type: String, index: true },
     role: {type:Number, index: true,required: true},
-    password: {type: String},
+    password: {type: String, required: true},
     phone: {type: String},
     nickname: {type: String, unique: true, index: true,required: true},
     image: {type: String},
-    create_date: { type: Date, index: true },
+    created_date: { type: Date, index: true, default: Date.now },
     my_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     suscribe_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     fav_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],

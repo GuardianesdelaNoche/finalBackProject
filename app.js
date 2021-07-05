@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const authController = require('./controllers/authController');
 
 var app = express();
 
@@ -21,6 +22,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/**
+ * Rutas del API
+ */
+app.post('/api/v1/authJWT', authController.postJWT);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
