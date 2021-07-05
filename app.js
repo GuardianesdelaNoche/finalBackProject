@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 /**
  * Rutas del API
  */
-app.post('/api/v1/authJWT', authController.postJWT);
+app.post('/api/v1/user/login', authController.postJWT);
+app.use('/api/v1/user/register', require('./routes/api/v1/register'));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
