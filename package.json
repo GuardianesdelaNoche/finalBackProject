@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "loadUsers": "node ./lib/loadUsers.js",
     "dev": "cross-env PORT=3000 NODE_ENV=development DEBUG=nodeapi:* nodemon",
     "mockData": "node ./mockDatabase/mockData.js"
   },
@@ -15,6 +16,7 @@
     "dotenv": "^10.0.0",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
+    "express-validator": "^6.12.0",
     "faker": "^5.5.3",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
