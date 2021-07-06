@@ -1,13 +1,9 @@
 'use strict';
 require('dotenv').config();
-const db = require('../lib/connectMongoose');
-
 const faker = require('faker');
 const Events = require('../models/Events');
 
-initDB().catch(err => console.error(err));
-
- async function initDB(){
+ module.exports = async function toMockData(){
     try {
         
         for (let index = 0; index <= 10; index++) {
@@ -23,9 +19,7 @@ initDB().catch(err => console.error(err));
         
             await newEvent.save();
         }    
-          
-            db.close()
-            console.log('done')
+            console.log('done mock')
     } catch (error) {
         console.log(error);
     }
