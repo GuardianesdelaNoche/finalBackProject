@@ -46,6 +46,18 @@ userSchema.statics.existsNickName = function(nickname){
     return isUserNickName.exec()
 }
 
+//Create a new user
+userSchema.statics.newUser = function(userNew,namePhoto=''){
+    if(namePhoto){
+        Object.assign(userNew,{'image': namePhoto})
+    } else {
+        Object.assign(userNew,{'image': 'DefaultUserImage.png'}) 
+    }
+    const user = new User(userNew);
+    const createUser =  user.save();
+    return createUser;
+  }
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
