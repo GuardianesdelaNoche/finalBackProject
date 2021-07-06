@@ -10,6 +10,10 @@ const authController = require('./controllers/authController');
 
 var app = express();
 
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 require('./lib/connectMongoose');
 
 // view engine setup
@@ -29,6 +33,13 @@ app.post('/api/v1/user/login', authController.postJWT);
 app.use('/api/v1/user/register', require('./routes/api/v1/register'));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+/**
+ * Swagger 
+ */
+
+ app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
