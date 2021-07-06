@@ -1,11 +1,11 @@
 'use strict';
 require('dotenv').config();
-const Events = require('../models/Events');
+const Event = require('../models/Event');
 
 module.exports = async function removeCollection() {
     try {
-        const { deletedCount } = await Events.deleteMany();
-        console.log(`Deleted ${deletedCount} events.`);
+        const { deletedCount } = await Event.deleteMany();
+        console.log(`Deleted ${deletedCount} event.`);
     } catch (error) {
         console.log(error);
     }

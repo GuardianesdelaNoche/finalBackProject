@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const Event = require('./Events');
+const Event = require('./Event');
 var Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
