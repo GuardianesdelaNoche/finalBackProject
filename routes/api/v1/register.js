@@ -49,7 +49,6 @@ const upload = multer({
  * Recording of new events with validation included and image upload
  * Not required Token
  */
-//router.post('/', jwtAuth, upload,
 
 router.post('/', upload,
     [
@@ -104,8 +103,9 @@ router.post('/', upload,
         }
         const namePhoto = req.file ? req.file.filename :''
         const newUser = await User.newUser(req.body,namePhoto);
-
-        res.status(201).json({result:newUser});
+        const {_id,username,nickname} = newUser
+        res.status(201).json({result:{_id,username,nickname}});
+    
     } catch (error) {
         next(error)      
         }
