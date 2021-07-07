@@ -47,13 +47,15 @@ userSchema.statics.existsNickName = function(nickname){
 }
 
 //Create a new user
-userSchema.statics.newUser = function(userNew,namePhoto=''){
+userSchema.statics.newUser = async function(userNew,namePhoto=''){
     if(namePhoto){
         Object.assign(userNew,{'image': namePhoto})
     } else {
         Object.assign(userNew,{'image': 'DefaultUserImage.png'}) 
     }
-    const user = new User(userNew);
+    const encriptPass = await User.hashPassword(userNew.password)
+    const userEncript = {...userNew,password:encriptPass}
+    const user = new User(userEncript);
     const createUser =  user.save();
     return createUser;
   }
