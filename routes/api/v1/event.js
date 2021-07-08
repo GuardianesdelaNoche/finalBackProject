@@ -6,7 +6,7 @@ const Event = require('../../../models/Event')
 /* GET anuncios page. */
 router.get('/', async function (req, res, next) {
   try {
-    const skip = parseInt(req.query.start) || 0
+    const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit)
     const sort = req.query.sort || 'date'
     const includeTotal = true
