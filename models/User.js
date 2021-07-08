@@ -70,6 +70,20 @@ userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[])
     return createUser;
   }
 
+ //GET User
+ userSchema.statics.getUser = function(idUser){
+    const query = User.findById(idUser);
+    return query.exec();
+
+ }
+
+ //Delete User
+
+ userSchema.statics.deleteUser = function(idUser){
+     const query = User.findOneAndDelete({_id:idUser})
+     return query.exec();
+ }
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
