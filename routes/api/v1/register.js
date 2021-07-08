@@ -35,7 +35,7 @@ passwordSchema
 const upload = multer({
     storage,
     dest: './public/images/photoUser',
-    limits: {fileSize: 1 * 1000000 * 1000000},
+    limits: {fileSize: 1 * 10000 * 10000},
     fileFilter: (req,file,cb) =>{
         const ext = path.extname(file.originalname).toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
@@ -47,14 +47,17 @@ const upload = multer({
 
 /**
  * Recording of new events with validation included and image upload
+ * Not required Token
  */
 
-router.post('/', jwtAuth, upload,
+router.post('/', upload,
     [
-        body('username').isLength({ min: 6 }).escape().withMessage('El campo username es obligatorio'),
-        body('email').isEmail().escape().withMessage('El campo email es obligatorio'),
-        body('role').isNumeric().withMessage('El rol debe ser numérico'),
-        body('nickname').not().isEmpty().trim().escape().withMessage('El nickname es obligatorio'),
+        body('username').isLength({ min: 6 }).escape().withMessage('The username is required and min 6 characters'),
+        body('email').isEmail().escape().withMessage('Email, incorrect format'),
+        body('role').isNumeric().withMessage('The role must be numeric'),
+        body('nickname').not().isEmpty().trim().escape().withMessage('The nickname is required'),
+        body('latitude').optional().isNumeric().withMessage('The latitude must be numeric'),
+        body('longitude').optional().isNumeric().withMessage('The longitude must be numeric'),
         body('password').custom(password => {   
 /**
  * Validate password, minimum requirements.
@@ -92,6 +95,7 @@ router.post('/', jwtAuth, upload,
                 return true
             }
         }).escape().withMessage('Nickname, already exists'),
+
         
     ], 
  async (req, res, next) =>{
@@ -101,9 +105,13 @@ router.post('/', jwtAuth, upload,
             return res.status(422).json({ errors: errors.array()});
         }
         const namePhoto = req.file ? req.file.filename :''
-        const newUser = await User.newUser(req.body,namePhoto);
-
-        res.status(201).json({result:newUser});
+        const latitude = req.body.latitude ? req.body.latitude : 0
+        const longitude = req.body.longitude ? req.body.longitude : 0
+        const coordinates = longitude>0 && latitude>0 ? [longitude,latitude] :[]
+        const newUser = await User.newUser(req.body,namePhoto,coordinates);
+        const {_id,username,nickname} = newUser
+        res.status(201).json({result:{_id,username,nickname}});
+    
     } catch (error) {
         next(error)      
         }

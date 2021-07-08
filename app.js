@@ -31,8 +31,9 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 app.post('/api/v1/user/login', authController.postJWT);
 app.use('/api/v1/user/register', require('./routes/api/v1/register'));
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/v1/user/update', require('./routes/api/v1/users'));
+//app.use('/', indexRouter);
+//app.use('/users', usersRouter);
 
 /**
  * Swagger 

@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Event = require('./Event');
+const { PreconditionFailed } = require('http-errors');
 var Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({
@@ -21,7 +22,12 @@ const userSchema = mongoose.Schema({
     my_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     suscribe_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     fav_events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+    location: {
+        type: {type: String},
+        coordinates: [Number]
+    }
 });
+userSchema.index({ "location": "2dsphere" });
 
 userSchema.statics.hashPassword = function(passwordOriginal){
     return bcrypt.hash(passwordOriginal, 10);
@@ -47,16 +53,36 @@ userSchema.statics.existsNickName = function(nickname){
 }
 
 //Create a new user
-userSchema.statics.newUser = function(userNew,namePhoto=''){
+userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[]){
     if(namePhoto){
         Object.assign(userNew,{'image': namePhoto})
     } else {
         Object.assign(userNew,{'image': 'DefaultUserImage.png'}) 
     }
-    const user = new User(userNew);
-    const createUser =  user.save();
+
+    if(coordinates.length){
+        Object.assign(userNew,{'location':{'coordinates': coordinates, 'type':'Point'}})
+    }
+    const encriptPass = await User.hashPassword(userNew.password)
+    const userEncript = {...userNew,password:encriptPass}
+    const user = new User(userEncript);
+    const createUser = user.save();
     return createUser;
   }
+
+ //GET User
+ userSchema.statics.getUser = function(idUser){
+    const query = User.findById(idUser);
+    return query.exec();
+
+ }
+
+ //Delete User
+
+ userSchema.statics.deleteUser = function(idUser){
+     const query = User.findOneAndDelete({_id:idUser})
+     return query.exec();
+ }
 
 const User = mongoose.model('User', userSchema);
 
