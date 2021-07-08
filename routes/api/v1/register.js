@@ -56,6 +56,8 @@ router.post('/', upload,
         body('email').isEmail().escape().withMessage('Email, incorrect format'),
         body('role').isNumeric().withMessage('The role must be numeric'),
         body('nickname').not().isEmpty().trim().escape().withMessage('The nickname is required'),
+        body('latitude').optional().isNumeric().withMessage('The latitude must be numeric'),
+        body('longitude').optional().isNumeric().withMessage('The longitude must be numeric'),
         body('password').custom(password => {   
 /**
  * Validate password, minimum requirements.
@@ -93,6 +95,7 @@ router.post('/', upload,
                 return true
             }
         }).escape().withMessage('Nickname, already exists'),
+
         
     ], 
  async (req, res, next) =>{
@@ -102,7 +105,10 @@ router.post('/', upload,
             return res.status(422).json({ errors: errors.array()});
         }
         const namePhoto = req.file ? req.file.filename :''
-        const newUser = await User.newUser(req.body,namePhoto);
+        const latitude = req.body.latitude ? req.body.latitude : 0
+        const longitude = req.body.longitude ? req.body.longitude : 0
+        const coordinates = longitude>0 && latitude>0 ? [longitude,latitude] :[]
+        const newUser = await User.newUser(req.body,namePhoto,coordinates);
         const {_id,username,nickname} = newUser
         res.status(201).json({result:{_id,username,nickname}});
     
