@@ -13,7 +13,7 @@ const Event = require('../models/Event');
                  price: faker.commerce.price(),
                  max_places: faker.datatype.number(100),
                  date: faker.date.between("05-01-2021", "08-07-2021"),
-                 duration: faker.datatype.number(1,25),
+                 duration: faker.datatype.number(60),
                  photo: faker.image.image(),
                  indoor: faker.datatype.boolean(),
                  long: '',
