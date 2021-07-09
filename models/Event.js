@@ -1,6 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -11,11 +12,15 @@ const eventSchema = mongoose.Schema({
     duration: { type: Number, index: true, required: true},
     photo: {type:String, index: true},
     indoor: {type:Boolean, index:true, required: true},
-    long: {type:String, index: true},
-    lat: {type:String, index: true},
+    location: {
+      type: {type: String},
+      coordinates: [Number]
+    },
     tags: [String],
-    _id_assistants:[String]
+    _id_assistants:[{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
+
+eventSchema.index({ "location": "2dsphere" });
 
 eventSchema.statics.createRecord = function (nuevo, cb) {
     new Event(nuevo).save(cb)

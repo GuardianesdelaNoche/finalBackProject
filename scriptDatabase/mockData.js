@@ -16,8 +16,10 @@ const Event = require('../models/Event');
                  duration: faker.datatype.number(60),
                  photo: faker.image.image(),
                  indoor: faker.datatype.boolean(),
-                 long: '',
-                 lat:'',
+                 location: {
+                    type: 'Point',
+                    coordinates: [ faker.address.longitude(), faker.address.latitude() ]
+                  },
                  tags: tags[Math.floor(Math.random() * tags.length)],
                  _id_assistants: []
             });
