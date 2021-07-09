@@ -6,7 +6,7 @@ const Event = require('../models/Event');
  module.exports = async function toMockData(){
     try {
         const tags = ['yoga', 'baile', 'futbol', 'paintball', 'concierto'];
-        for (let index = 0; index <= 15; index++) {
+        for (let index = 0; index <= 100; index++) {
             const newEvent = new Event({
                  title: faker.name.title(),
                  description: faker.lorem.paragraph() ,

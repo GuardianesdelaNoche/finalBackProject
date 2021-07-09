@@ -23,8 +23,6 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
   
 eventSchema.statics.list = async function (filters, startRow, numRows, sortField, includeTotal, cb) {
  
-    const today = new Date(Date.now());
-    console.log(today);
     const query = Event.find(filters)
     
     query.sort(sortField)
