@@ -3,7 +3,7 @@
 const router = require('express').Router()
 const Event = require('../../../models/Event')
 
-/* GET anuncios page. */
+/* GET events . */
 router.get('/', async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
