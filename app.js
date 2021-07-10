@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 
+var whitelist = ['https://4events.net']
+
 //var indexRouter = require('./routes/index');
 //var usersRouter = require('./routes/users');
 const authController = require('./controllers/authController');
@@ -17,15 +19,6 @@ const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 require('./lib/connectMongoose');
-
-// Configuration header & cors
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://4events.net');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-  next();
-});
 
 
 // view engine setup
