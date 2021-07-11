@@ -25,4 +25,17 @@ router.get('/', async function (req, res, next) {
   } catch (err) { return res.next(err) }
 })
 
+router.get('/:_id', async function (req, res, next) {
+  try {
+    const _id = req.params._id;
+
+    const event = await Event.findOne({_id:_id})
+
+    res.json({ event })
+
+  } catch (err) { 
+    return res.next(err) 
+  }
+})
+
 module.exports = router
