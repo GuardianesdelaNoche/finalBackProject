@@ -16,7 +16,7 @@ module.exports = async function initUsers() {
                 postal_code: '08200' ,
                 country: 'Spain',
                 role: 1,
-                password: await User.hashPassword('1234'),
+                password: await User.hashPassword('Test1234'),
                 phone: '900000',
                 nickname: 'test',
                 image: '',

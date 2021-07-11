@@ -3,27 +3,22 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+
+var whitelist = ['https://4events.net']
 
 //var indexRouter = require('./routes/index');
 //var usersRouter = require('./routes/users');
 const authController = require('./controllers/authController');
 
 var app = express();
+app.use(cors());
 
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
 require('./lib/connectMongoose');
-
-// Configuration header & cors
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method','x-access-token');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
-  next();
-});
 
 
 // view engine setup
@@ -41,6 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
  */
 app.post('/api/v1/user/login', authController.postJWT);
 app.use('/api/v1/user/register', require('./routes/api/v1/register'));
+app.use('/api/v1/events', require('./routes/api/v1/event'));
+
 app.use('/api/v1/user/update', require('./routes/api/v1/users'));
 //app.use('/', indexRouter);
 //app.use('/users', usersRouter);
