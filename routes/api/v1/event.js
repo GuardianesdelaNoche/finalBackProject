@@ -54,7 +54,8 @@ router.get('/:_id', async function (req, res, next) {
     const event = await Event.findOne({_id:_id})
 
     if (!event) {
-      res.status(404).json('not found event')
+      res.status(404).json({ error: 'not found' })
+      return;
     } else {
       res.json({ event })
     }
@@ -91,15 +92,14 @@ router.post('/', upload, async (req, res, next) => {
 
 });
 
-
-
 router.delete('/:_id', async (req, res, next) => {
   try {
     const { _id } = req.params;
     const deletedEvent = await Event.findByIdAndDelete(_id);
 
     if (!deletedEvent) {
-      res.status(404).json('not found event')
+      res.status(404).json({ error: 'not found' })
+      return;
     } {
       res.json(`${deletedEvent._id} deleted`);
     }
