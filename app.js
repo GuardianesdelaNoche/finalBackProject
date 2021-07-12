@@ -39,6 +39,7 @@ app.use('/api/v1/user/register', require('./routes/api/v1/register'));
 app.use('/api/v1/events', require('./routes/api/v1/event'));
 
 app.use('/api/v1/user/update', require('./routes/api/v1/users'));
+app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
 //app.use('/', indexRouter);
 //app.use('/users', usersRouter);
 
