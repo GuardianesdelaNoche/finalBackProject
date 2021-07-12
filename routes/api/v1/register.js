@@ -46,7 +46,7 @@ const upload = multer({
 }).single('image')
 
 /**
- * Recording of new events with validation included and image upload
+ * Recording new user with validation included and image upload
  * Not required Token
  */
 
@@ -107,7 +107,7 @@ router.post('/', upload,
         const namePhoto = req.file ? req.file.filename :''
         const latitude = req.body.latitude ? req.body.latitude : 0
         const longitude = req.body.longitude ? req.body.longitude : 0
-        const coordinates = longitude>0 && latitude>0 ? [longitude,latitude] :[]
+        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? [longitude,latitude] :[]
         const newUser = await User.newUser(req.body,namePhoto,coordinates);
         const {_id,username,nickname} = newUser
         res.status(201).json({result:{_id,username,nickname}});
