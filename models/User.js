@@ -68,21 +68,80 @@ userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[])
     const user = new User(userEncript);
     const createUser = user.save();
     return createUser;
-  }
+}
 
  //GET User
- userSchema.statics.getUser = function(idUser){
-    const query = User.findById(idUser);
+userSchema.statics.getUser = function(idUser){
+    const query = User.findById(idUser).populate('suscribe_events');
     return query.exec();
 
- }
+}
 
  //Delete User
-
- userSchema.statics.deleteUser = function(idUser){
+userSchema.statics.deleteUser = function(idUser){
      const query = User.findOneAndDelete({_id:idUser})
      return query.exec();
- }
+}
+
+//Add new Event _id in suscribe_events
+userSchema.statics.addSuscribe_Events = function(idUser,idEvent){
+    const updateSuscribe =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {suscribe_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateSuscribe
+};
+////Delete Event _id in suscribe_events
+userSchema.statics.delSuscribe_Events = function(idUser,idEvent){
+    const deleteSuscribe =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$pull: {suscribe_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteSuscribe
+};
+
+// Add a new Event _id in my_events
+userSchema.statics.addMy_Events = function(idUser,idEvent){
+    const updateMy =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {my_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateMy
+};
+
+// Delete Event _id in my_events
+userSchema.statics.delMy_Events = function(idUser,idEvent){
+    const deleteMy =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$pull: {my_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteMy
+};
+
+
+// Add a new Event _id in fav_events 
+userSchema.statics.addFavEvents = function(idUser,idEvent){
+    const updateFav =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {fav_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateFav
+};
+
+// Delete Event _id in fav_events 
+userSchema.statics.delFavEvents = function(idUser,idEvent){
+    const deleteFav =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {fav_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteFav
+};
 
 const User = mongoose.model('User', userSchema);
 
