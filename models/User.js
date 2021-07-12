@@ -83,6 +83,43 @@ userSchema.statics.deleteUser = function(idUser){
      return query.exec();
 }
 
+//Delete User image if is not a DefaultUserImage.png
+/**
+ * TODO
+ * Delete image in public/images/photoUser
+ */
+
+/**
+ * Update user 
+ */
+ userSchema.statics.updateUser = function(idUser,reqValues,namePhoto,coordinates){
+    const valUpdate = reqValues
+    
+    const valObject= {}
+    valUpdate.username ? valObject.username = valUpdate.username:{}
+    valUpdate.email ? valObject.email = valUpdate.email:{};
+    valUpdate.address ? valObject.address = valUpdate.address:{};
+    valUpdate.city ? valObject.city = valUpdate.city:{};
+    valUpdate.postal_code ? valObject.postal_code = valUpdate.postal_code:{};
+    valUpdate.country ? valObject.country = valUpdate.country:{};
+    valUpdate.role ? valObject.role = valUpdate.role:{};
+    valUpdate.password ? valObject.password = valUpdate.password:{};
+    valUpdate.phone ? valObject.phone = valUpdate.phone:{};
+    valUpdate.nickname ? valObject.nickname = valUpdate.nickname:{};
+    valUpdate.image ? valObject.image = valUpdate.image:{};
+    valUpdate.location ? valObject.coordinates = valUpdate.location:{};
+    // console.log(valObject)
+    const updateUser =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$set: valObject},
+        {new: true}
+    ).exec()
+        return updateUser
+
+ }
+
+
+
 //Add new Event _id in suscribe_events
 userSchema.statics.addSuscribe_Events = function(idUser,idEvent){
     const updateSuscribe =  User.findByIdAndUpdate(
