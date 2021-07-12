@@ -32,10 +32,18 @@ router.get('/:id_user?', jwtAuth, async function(req,res,next){
 
 
 //Delete user
-router.delete('/', jwtAuth, async function(req,res,next){
+router.delete('/:id_user?', jwtAuth, async function(req,res,next){
     try {
-        const deleteUser = await User.deleteUser(req.apiAuthUserId)
-        return res.status(200).json({result: `Successful deletion: ${req.apiAuthUserId}`});
+        const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
+        if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
+            const deleteUser = await User.deleteUser(req.apiAuthUserId)
+            return res.status(200).json({result: `Successful deletion: ${req.apiAuthUserId}`});     
+        }else {
+            const err = new Error(`The user does not have privileges for this action`);
+            err.status = 403
+            throw err
+        }
+        
     } catch (error) {
         next(error);
     }
