@@ -92,9 +92,8 @@ userSchema.statics.deleteUser = function(idUser){
 /**
  * Update user 
  */
- userSchema.statics.updateUser = function(idUser,reqValues,namePhoto,coordinates){
+ userSchema.statics.updateUser = function(idUser,reqValues,namePhoto='',coordinates=[]){
     const valUpdate = reqValues
-    
     const valObject= {}
     valUpdate.username ? valObject.username = valUpdate.username:{}
     valUpdate.email ? valObject.email = valUpdate.email:{};
@@ -106,9 +105,9 @@ userSchema.statics.deleteUser = function(idUser){
     valUpdate.password ? valObject.password = valUpdate.password:{};
     valUpdate.phone ? valObject.phone = valUpdate.phone:{};
     valUpdate.nickname ? valObject.nickname = valUpdate.nickname:{};
-    valUpdate.image ? valObject.image = valUpdate.image:{};
-    valUpdate.location ? valObject.coordinates = valUpdate.location:{};
-    // console.log(valObject)
+    namePhoto ? valObject.image = namePhoto:{};
+    coordinates.length ? valObject.location = {'coordinates': coordinates, 'type':'Point'}:{};
+
     const updateUser =  User.findByIdAndUpdate(
         {_id: idUser },
         {$set: valObject},

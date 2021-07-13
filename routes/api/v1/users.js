@@ -153,14 +153,14 @@ async (req, res, next) =>{
             return res.status(422).json({ errors: errors.array()});
         }
         const namePhoto = req.file ? req.file.filename :''
-        const latitude = req.body.latitude ? req.body.latitude : 0
-        const longitude = req.body.longitude ? req.body.longitude : 0
-        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? [longitude,latitude] :[]
-        const newUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
+        const latitude = req.body.latitude ? req.body.latitude :200
+        const longitude = req.body.longitude ? req.body.longitude : 200
+        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
+        const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
         const {_id,username,nickname} = newUser
         //res.status(201).json({result:{_id,username,nickname}});
-        res.status(201).json({result:newUser});
+        res.status(201).json({result:updateUser});
     }else{
         const err = new Error(`The user does not have privileges for this action`);
         err.status = 403
