@@ -68,21 +68,122 @@ userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[])
     const user = new User(userEncript);
     const createUser = user.save();
     return createUser;
-  }
+}
 
  //GET User
- userSchema.statics.getUser = function(idUser){
+userSchema.statics.getUser = function(idUser){
+    //const query = User.findById(idUser).populate('suscribe_events');
     const query = User.findById(idUser);
     return query.exec();
+}
 
- }
+ //GET User by e-mail
+ userSchema.statics.getUserEmail = function(email){
+    const query = User.countDocuments({email});
+    return query.exec();
+}
 
  //Delete User
-
- userSchema.statics.deleteUser = function(idUser){
+userSchema.statics.deleteUser = function(idUser){
      const query = User.findOneAndDelete({_id:idUser})
      return query.exec();
+}
+
+//Delete User image if is not a DefaultUserImage.png
+/**
+ * TODO
+ * Delete image in public/images/photoUser
+ */
+
+/**
+ * Update user 
+ */
+ userSchema.statics.updateUser = function(idUser,reqValues,namePhoto='',coordinates=[]){
+    const valUpdate = reqValues
+    const valObject= {}
+    valUpdate.username ? valObject.username = valUpdate.username:{}
+    valUpdate.email ? valObject.email = valUpdate.email:{};
+    valUpdate.address ? valObject.address = valUpdate.address:{};
+    valUpdate.city ? valObject.city = valUpdate.city:{};
+    valUpdate.postal_code ? valObject.postal_code = valUpdate.postal_code:{};
+    valUpdate.country ? valObject.country = valUpdate.country:{};
+    valUpdate.role ? valObject.role = valUpdate.role:{};
+    valUpdate.password ? valObject.password = valUpdate.password:{};
+    valUpdate.phone ? valObject.phone = valUpdate.phone:{};
+    valUpdate.nickname ? valObject.nickname = valUpdate.nickname:{};
+    namePhoto ? valObject.image = namePhoto:{};
+    coordinates.length ? valObject.location = {'coordinates': coordinates, 'type':'Point'}:{};
+
+    const updateUser =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$set: valObject},
+        {new: true}
+    ).exec()
+        return updateUser
+
  }
+
+
+
+//Add new Event _id in suscribe_events
+userSchema.statics.addSuscribe_Events = function(idUser,idEvent){
+    const updateSuscribe =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {suscribe_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateSuscribe
+};
+////Delete Event _id in suscribe_events
+userSchema.statics.delSuscribe_Events = function(idUser,idEvent){
+    const deleteSuscribe =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$pull: {suscribe_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteSuscribe
+};
+
+// Add a new Event _id in my_events
+userSchema.statics.addMy_Events = function(idUser,idEvent){
+    const updateMy =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {my_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateMy
+};
+
+// Delete Event _id in my_events
+userSchema.statics.delMy_Events = function(idUser,idEvent){
+    const deleteMy =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$pull: {my_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteMy
+};
+
+
+// Add a new Event _id in fav_events 
+userSchema.statics.addFavEvents = function(idUser,idEvent){
+    const updateFav =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {fav_events: idEvent } },
+        {new: true}
+    ).exec()
+        return updateFav
+};
+
+// Delete Event _id in fav_events 
+userSchema.statics.delFavEvents = function(idUser,idEvent){
+    const deleteFav =  User.findByIdAndUpdate(
+        {_id: idUser },
+        {$addToSet: {fav_events: idEvent } },
+        {new: true}
+    ).exec()
+        return deleteFav
+};
 
 const User = mongoose.model('User', userSchema);
 
