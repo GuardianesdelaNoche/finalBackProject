@@ -7,9 +7,13 @@ const {body, validationResult} = require('express-validator');
 const path = require('path');
 const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
+const sendingMail = require('../../../lib/nodeMail');
+const recoverPassController = require('../../../controllers/recoverPassController');
 
 
 const User = require('../../../models/User');
+const { route } = require('./event');
+const { response } = require('express');
 
 const passwordSchema = new pv();
 passwordSchema
@@ -45,6 +49,36 @@ const upload = multer({
 }).single('image')
 
 
+//recover Password
+router.post('/recoverpass', 
+        [body('email').isEmail().escape().withMessage('Data, incorrect format')] ,async(req,res,next) => {
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array()});
+    }
+
+    try {
+       //Validate id e-mail exixsts
+        const userEx = await User.getUserEmail(req.body.email)
+    if (!userEx){
+        throw new Error(`User not exists`)
+    } 
+    const recoverToken = await recoverPassController(req.body.email);
+    if (recoverToken){
+        //Send  email
+      const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
+                `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`)
+                
+        res.status(201).json({result:respuesta});
+    }
+
+
+    } catch (error) {
+        next(error);
+    }
+
+});
 
 
 //Get any user by super administrator or own 
@@ -169,7 +203,7 @@ async (req, res, next) =>{
  
  } catch (error) {
      next(error)      
-     }
+    }
 });
 
 

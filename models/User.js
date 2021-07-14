@@ -72,9 +72,15 @@ userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[])
 
  //GET User
 userSchema.statics.getUser = function(idUser){
-    const query = User.findById(idUser).populate('suscribe_events');
+    //const query = User.findById(idUser).populate('suscribe_events');
+    const query = User.findById(idUser);
     return query.exec();
+}
 
+ //GET User by e-mail
+ userSchema.statics.getUserEmail = function(email){
+    const query = User.countDocuments({email});
+    return query.exec();
 }
 
  //Delete User
