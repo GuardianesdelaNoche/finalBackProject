@@ -101,7 +101,7 @@ router.delete('/:_id', async (req, res, next) => {
       res.status(404).json({ error: 'not found' })
       return;
     } {
-      res.json(`${deletedEvent._id} deleted`);
+      res.status(200).json(`${deletedEvent._id} deleted`);
     }
 
   } catch (error) {
