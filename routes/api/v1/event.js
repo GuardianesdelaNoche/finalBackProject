@@ -131,4 +131,33 @@ router.delete('/:_id', async (req, res, next) => {
 
 });
 
+router.put('/:_id', upload,  async(req, res, next) => {
+
+  try {
+    const { _id } = req.params;
+    const { title, description, price, max_places, date, duration, indoor, tags } = req.body;
+    const namePhoto = req.file ? req.file.filename :'';
+    const latitude = req.body.latitude ? req.body.latitude : 0
+    const longitude = req.body.longitude ? req.body.longitude : 0
+    const coordinates = latitude<0 && longitude<0 ? [longitude,latitude] :[]
+
+    const updatedEvent = await Event
+    .findByIdAndUpdate(
+      _id, 
+      {$set: req.body},
+      { useFindAndModify: false} )
+    
+    if (!updatedEvent) {
+      res.status(404).json({ error: 'not found' });
+      return;
+    }
+  
+    res.status(200).json({ result: updatedEvent });
+  
+  } catch (error) {
+    next(error);
+  }
+
+})
+
 module.exports = router
