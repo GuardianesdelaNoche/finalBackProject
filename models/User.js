@@ -98,9 +98,15 @@ userSchema.statics.deleteUser = function(idUser){
 /**
  * Update user 
  */
- userSchema.statics.updateUser = function(idUser,reqValues,namePhoto='',coordinates=[]){
+ userSchema.statics.updateUser = async function(idUser,reqValues,namePhoto='',coordinates=[]){
     const valUpdate = reqValues
     const valObject= {}
+    if (valUpdate.password){
+        const encriptPass = await User.hashPassword(valUpdate.password)
+        valObject.password = encriptPass
+    }
+    
+
     valUpdate.username ? valObject.username = valUpdate.username:{}
     valUpdate.email ? valObject.email = valUpdate.email:{};
     valUpdate.address ? valObject.address = valUpdate.address:{};
@@ -108,7 +114,6 @@ userSchema.statics.deleteUser = function(idUser){
     valUpdate.postal_code ? valObject.postal_code = valUpdate.postal_code:{};
     valUpdate.country ? valObject.country = valUpdate.country:{};
     valUpdate.role ? valObject.role = valUpdate.role:{};
-    valUpdate.password ? valObject.password = valUpdate.password:{};
     valUpdate.phone ? valObject.phone = valUpdate.phone:{};
     valUpdate.nickname ? valObject.nickname = valUpdate.nickname:{};
     namePhoto ? valObject.image = namePhoto:{};
@@ -184,6 +189,22 @@ userSchema.statics.delFavEvents = function(idUser,idEvent){
     ).exec()
         return deleteFav
 };
+
+//Find own events
+userSchema.statics.findOwnEvents = function(idUser, activeEvents = true){
+    let currentDate = new Date();
+    // const findEvents = User.find( {$and:[{'_id':idUser},{'my_events.date':{ $lte: Date.now()}}]}).populate('my_events').exec()
+    //const findEvents = User.find({_id:idUser}).populate('my_events').exec()
+   
+    const findEvents = User.find({_id:idUser}).
+        populate(
+            {path:'my_events',
+            match: { date: { $gte: currentDate }}
+    }).exec()
+
+    //const findEvents = User.find( {'created_date':{$lte: currentDate}}).populate('my_events').exec()
+    return findEvents
+}
 
 const User = mongoose.model('User', userSchema);
 

@@ -35,5 +35,15 @@ router.delete('/', async function (req, res, next){
     }
 });
 
+router.get('/populateSearch', async function(req,res,next){
+
+    try {
+        const resultado = await User.findOwnEvents('60e779f912b1cf13935c7e77')
+        res.status(201).json({result: resultado})
+    } catch (error) {
+        next(error)
+    }
+})
+
 
 module.exports = router;

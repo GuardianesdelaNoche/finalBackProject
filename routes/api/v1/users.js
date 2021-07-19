@@ -192,9 +192,9 @@ async (req, res, next) =>{
         const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
-        const {_id,username,nickname} = newUser
-        //res.status(201).json({result:{_id,username,nickname}});
-        res.status(201).json({result:updateUser});
+        const {_id,username,nickname} = updateUser
+        res.status(201).json({result:{_id,username,nickname,email}});
+        
     }else{
         const err = new Error(`The user does not have privileges for this action`);
         err.status = 403
