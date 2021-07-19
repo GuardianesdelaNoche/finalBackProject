@@ -1,14 +1,87 @@
 openapi: 3.0.0
 info:
-  title: Nodemon API
+  title: 4Events API
   description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
   version: 0.1.9
 servers:
+  - url: https://services.4events.net
+    description: Main (production) server
   - url: http://localhost:3000
-    description: Optional server description, e.g. Main (production) server
-  - url: http://localhost:3000
-    description: Optional server description, e.g. Internal staging server for testing
+    description: Developer (Local)
 paths:
+  /api/v1/user/login:
+    post:
+      summary: Returns a token for a valid users.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string        
+      tags:
+        - Login
+      # parameters:
+      # - in: body
+      #   name: body
+      #   description: Username 
+      #   required: true
+      #   schema:
+      #     type: string
+      #     items:
+      #   description: User name
+      # - name: password
+      #   in: body
+      #   schema:
+      #     type: string
+      #   description: User password
+    
+      responses:
+        '201':    # status code
+          description: A JSON object with token
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: string
+        '401':    
+          description: No coment
+
+  /api/v1/users:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Returns a user for a valid token.
+      
+      # requestBody:
+        # content:
+        #   application/json:
+            # schema:
+            #   type: object
+              # properties:
+              #   token:
+              #     type: string
+              #   password:
+              #     type: string        
+      tags:
+        - get User
+    
+      responses:
+        '201':    # status code
+          description: A JSON object with token
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: string
+        '401':    
+          description: No coment
+
   /api/products:
     get:
       summary: Returns a list of products.
@@ -194,6 +267,12 @@ paths:
                 items:
                   type: string
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     Products:
       properties:
