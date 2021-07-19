@@ -41,6 +41,27 @@ router.get('/', async function (req, res, next) {
     if (req.query.indoor) {
       filters.indoor = req.query.indoor
     }
+
+    if (req.query.tags) {
+      filters.tags = { $in: req.query.tags };
+    }
+
+    if (typeof req.query.price !== 'undefined' && req.query.price !== '-') {
+      if (req.query.price.indexOf('-') !== -1) {
+        filters.price = {}
+        let range = req.query.price.split('-')
+        if (range[0] !== '') {
+          filters.price.$gte = range[0]
+        }
+  
+        if (range[1] !== '') {
+          filters.price.$lte = range[1]
+        }
+      } else {
+        filters.price = req.query.price
+      }
+    }
+  
    
     const {total, rows} = await Event.list(filters, skip, limit, sort, includeTotal)
     res.json({ total, events: rows })
@@ -109,4 +130,5 @@ router.delete('/:_id', async (req, res, next) => {
   }
 
 });
+
 module.exports = router
