@@ -65,7 +65,7 @@ router.get('/', async function (req, res, next) {
    
     const {total, rows} = await Event.list(filters, skip, limit, sort, includeTotal)
     res.json({ total, events: rows })
-  } catch (err) { return res.next(err) }
+  } catch (err) { next(error); }
 })
 
 router.get('/:_id', async function (req, res, next) {
@@ -82,7 +82,7 @@ router.get('/:_id', async function (req, res, next) {
     }
 
   } catch (err) { 
-    return res.next(err) 
+    next(error);
   }
 })
 
@@ -91,9 +91,9 @@ router.post('/', upload, async (req, res, next) => {
   try {
     const {title, description, price, max_places, date, duration, indoor, tags, _id_assistants} = req.body;
 
-    const latitude = req.body.latitude ? req.body.latitude : 0
-    const longitude = req.body.longitude ? req.body.longitude : 0
-    const coordinates = latitude<0 && longitude<0 ? [longitude,latitude] :[]
+    const latitude = req.body.latitude ? req.body.latitude :200
+    const longitude = req.body.longitude ? req.body.longitude : 200
+    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
     const namePhoto = req.file ? req.file.filename :'';
   
     
@@ -107,7 +107,7 @@ router.post('/', upload, async (req, res, next) => {
   
     res.status(201).json({ result: event});    
   } catch (error) {
-    return next(error);
+    next(error);
   }
 
 
@@ -137,9 +137,9 @@ router.put('/:_id', upload,  async(req, res, next) => {
     const { _id } = req.params;
     const { title, description, price, max_places, date, duration, indoor, tags } = req.body;
     const namePhoto = req.file ? req.file.filename :'';
-    const latitude = req.body.latitude ? req.body.latitude : 0
-    const longitude = req.body.longitude ? req.body.longitude : 0
-    const coordinates = latitude<0 && longitude<0 ? [longitude,latitude] :[]
+    const latitude = req.body.latitude ? req.body.latitude : 200
+    const longitude = req.body.longitude ? req.body.longitude : 200
+    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
 
     const updatedEvent = await Event
     .findByIdAndUpdate(
