@@ -41,6 +41,27 @@ router.get('/', async function (req, res, next) {
     if (req.query.indoor) {
       filters.indoor = req.query.indoor
     }
+
+    if (req.query.tags) {
+      filters.tags = { $in: req.query.tags };
+    }
+
+    if (typeof req.query.price !== 'undefined' && req.query.price !== '-') {
+      if (req.query.price.indexOf('-') !== -1) {
+        filters.price = {}
+        let range = req.query.price.split('-')
+        if (range[0] !== '') {
+          filters.price.$gte = range[0]
+        }
+  
+        if (range[1] !== '') {
+          filters.price.$lte = range[1]
+        }
+      } else {
+        filters.price = req.query.price
+      }
+    }
+  
    
     const {total, rows} = await Event.list(filters, skip, limit, sort, includeTotal)
     res.json({ total, events: rows })
@@ -109,4 +130,34 @@ router.delete('/:_id', async (req, res, next) => {
   }
 
 });
+
+router.put('/:_id', upload,  async(req, res, next) => {
+
+  try {
+    const { _id } = req.params;
+    const { title, description, price, max_places, date, duration, indoor, tags } = req.body;
+    const namePhoto = req.file ? req.file.filename :'';
+    const latitude = req.body.latitude ? req.body.latitude : 0
+    const longitude = req.body.longitude ? req.body.longitude : 0
+    const coordinates = latitude<0 && longitude<0 ? [longitude,latitude] :[]
+
+    const updatedEvent = await Event
+    .findByIdAndUpdate(
+      _id, 
+      {$set: req.body},
+      { useFindAndModify: false} )
+    
+    if (!updatedEvent) {
+      res.status(404).json({ error: 'not found' });
+      return;
+    }
+  
+    res.status(200).json({ result: updatedEvent });
+  
+  } catch (error) {
+    next(error);
+  }
+
+})
+
 module.exports = router
