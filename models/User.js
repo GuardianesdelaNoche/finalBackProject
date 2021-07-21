@@ -29,6 +29,10 @@ const userSchema = mongoose.Schema({
 });
 userSchema.index({ "location": "2dsphere" });
 
+userSchema.virtual('calc_my_events').get(function(){
+    return this.my_events.length
+})
+
 userSchema.statics.hashPassword = function(passwordOriginal){
     return bcrypt.hash(passwordOriginal, 10);
 }
@@ -195,12 +199,39 @@ userSchema.statics.findOwnEvents = function(idUser, activeEvents = true){
     let currentDate = new Date();
     // const findEvents = User.find( {$and:[{'_id':idUser},{'my_events.date':{ $lte: Date.now()}}]}).populate('my_events').exec()
     //const findEvents = User.find({_id:idUser}).populate('my_events').exec()
-   
-    const findEvents = User.find({_id:idUser}).
-        populate(
-            {path:'my_events',
-            match: { date: { $gte: currentDate }}
-    }).exec()
+
+    const agg = [
+        {
+            $project: {
+                my_events: 1,
+                username: 1,
+                my_events_count: { $size: '$my_events'}
+        }},
+        {
+            $match:{
+                    _id: new mongoose.Types.ObjectId(idUser),
+                }
+        },
+        {
+            $lookup: {
+              from: "events",
+              as: "resultingArray",
+              localField: "my_events",
+              foreignField: "_id"
+            }
+          },
+          { $unwind: "$resultingArray"}, 
+          
+
+    ]
+    
+    //const findEvents = User.find({_id:idUser}).aggregate(agg).
+    const findEvents = User.aggregate(agg).
+    //     populate(
+    //         {path:'my_events',
+    //          match:{ date: { $gte: currentDate }}
+    // }).
+    exec()
 
     //const findEvents = User.find( {'created_date':{$lte: currentDate}}).populate('my_events').exec()
     return findEvents
