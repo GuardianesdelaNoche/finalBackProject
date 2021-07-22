@@ -37,6 +37,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.post('/api/v1/user/login', authController.postJWT);
 app.use('/api/v1/user/register', require('./routes/api/v1/register'));
 app.use('/api/v1/events', require('./routes/api/v1/event'));
+app.use('/api/v1/tags', require('./routes/api/v1/tag'));
+
 
 app.use('/api/v1/users', require('./routes/api/v1/users'));
 app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
