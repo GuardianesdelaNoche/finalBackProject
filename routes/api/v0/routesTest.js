@@ -11,6 +11,7 @@ const multer = require('multer');
 
 
 const User = require('../../../models/User');
+const Event = require('../../../models/Event')
 
 
 
@@ -45,15 +46,51 @@ router.get('/populateSearch', async function(req,res,next){
     }
 });
 
-router.get('/count', async function(req,res,next){
+// router.get('/count', async function(req,res,next){
+
+//     try {
+//         const resultado = await User.findOwnEventsE('60e78514162e7719e5684c1d')
+        
+//         res.status(201).json({result: resultado})
+//     } catch (error) {
+//         next(error)
+//     }
+// });
+
+router.get('/ownevent', async function(req,res,next){
 
     try {
-        const resultado = await User.findOwnEvents('60e779f912b1cf13935c7e77')
+        //req.sort = 'asc' or 'desc'
+        req.id= '60e779f912b1cf13935c7e77'
+        req.limit = 100
+        req.skip = 1
+        req.sort ='desc'
+        req.active = false
+        const resultado = await Event.findOwnEventsPaginate(req)
         
         res.status(201).json({result: resultado})
     } catch (error) {
         next(error)
     }
 });
+
+router.get('/favoriteevent', async function(req,res,next){
+
+    try {
+        //req.sort = 'asc' or 'desc'
+        req.id= '60e779f912b1cf13935c7e77'
+        req.limit = 100
+        req.skip = 0
+        req.sort ='desc'
+        req.active = false
+        const resultado = await Event.findFavoriteEventsPaginate(req)
+        
+        res.status(201).json({result: resultado})
+    } catch (error) {
+        next(error)
+    }
+});
+
+
 
 module.exports = router;

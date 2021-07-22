@@ -195,7 +195,7 @@ userSchema.statics.delFavEvents = function(idUser,idEvent){
 };
 
 //Find own events
-userSchema.statics.findOwnEvents = function(idUser, activeEvents = true){
+userSchema.statics.findOwnEventsE = function(idUser, activeEvents = true){
     let currentDate = new Date();
     // const findEvents = User.find( {$and:[{'_id':idUser},{'my_events.date':{ $lte: Date.now()}}]}).populate('my_events').exec()
     //const findEvents = User.find({_id:idUser}).populate('my_events').exec()
