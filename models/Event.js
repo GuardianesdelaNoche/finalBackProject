@@ -5,6 +5,7 @@ var Schema = mongoose.Schema;
 const User = require('./User');
 const eventsOwn = require('../lib/eventsOwn');
 const eventsFavorite = require('../lib/eventsFavorite');
+const eventsAssistant = require('../lib/eventsAssistant')
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -19,6 +20,7 @@ const eventSchema = mongoose.Schema({
       type: {type: String},
       coordinates: [Number]
     },
+    created_date: { type: Date, index: true, default: Date.now },
     tags: [String],
     _id_assistants:[{ type: Schema.Types.ObjectId, ref: 'User' }],
     _id_owner:[{type: Schema.Types.ObjectId, ref: 'User',index:true}],
@@ -69,6 +71,16 @@ eventSchema.statics.findFavoriteEventsPaginate = function(req){
   const aggregteFavorite = eventsFavorite(req)
 
   const findEvents = Event.aggregate(aggregteFavorite).
+  exec()
+
+  return findEvents
+}
+
+//Search assistants
+eventSchema.statics.findFavoriteAssistantsPaginate = function(req){
+  const aggregteAssistant = eventsAssistant(req)
+
+  const findEvents = Event.aggregate(aggregteAssistant).
   exec()
 
   return findEvents
