@@ -61,9 +61,9 @@ router.get('/ownevent', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60e779f912b1cf13935c7e77'
+        req.id= '60f49f376eb9eb0f543c3f94'
         req.limit = 100
-        req.skip = 1
+        req.skip = 0
         req.sort ='desc'
         req.active = false
         const resultado = await Event.findOwnEventsPaginate(req)
@@ -83,6 +83,10 @@ router.get('/favoriteevent', async function(req,res,next){
         req.skip = 0
         req.sort ='desc'
         req.active = false
+        req.lat=41.545585883662035
+        req.long=2.1071972631768157
+        req.distance_m = 70000 
+        
         const resultado = await Event.findFavoriteEventsPaginate(req)
         
         res.status(201).json({result: resultado})
@@ -91,6 +95,26 @@ router.get('/favoriteevent', async function(req,res,next){
     }
 });
 
+router.get('/assistant', async function(req,res,next){
+
+    try {
+        //req.sort = 'asc' or 'desc'
+        req.id= '60e779f912b1cf13935c7e77'
+        req.limit = 100
+        req.skip = 0
+        req.sort ='desc'
+        req.active = false
+        req.lat=41.545585883662035
+        req.long=2.1071972631768157
+        req.distance_m = 70000000
+        
+        const resultado = await Event.findFavoriteAssistantsPaginate(req)
+        
+        res.status(201).json({result: resultado})
+    } catch (error) {
+        next(error)
+    }
+});
 
 
 module.exports = router;
