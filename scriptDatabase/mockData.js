@@ -20,8 +20,11 @@ const Event = require('../models/Event');
                     type: 'Point',
                     coordinates: [ faker.address.longitude(), faker.address.latitude() ]
                   },
+                 country: faker.address.country(),
                  tags: tags[Math.floor(Math.random() * tags.length)],
-                 _id_assistants: []
+                 _id_assistants: [],
+                 _id_owner: [],
+                 _id_favorite: []
             });
         
             await newEvent.save();
