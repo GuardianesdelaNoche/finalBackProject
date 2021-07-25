@@ -3,9 +3,10 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 const User = require('./User');
-const eventsOwn = require('../lib/eventsOwn');
-const eventsFavorite = require('../lib/eventsFavorite');
-const eventsAssistant = require('../lib/eventsAssistant')
+// const eventsOwn = require('../lib/eventsOwn');
+// const eventsFavorite = require('../lib/eventsFavorite');
+// const eventsAssistant = require('../lib/eventsAssistant')
+const eventsByUser = require('../lib/eventsByUser')
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -57,7 +58,7 @@ eventSchema.statics.list = async function (filters, startRow, numRows, sortField
 
 //Search own events with paginate
 eventSchema.statics.findOwnEventsPaginate = function(req){
-  const aggregteOwn = eventsOwn(req)
+  const aggregteOwn = eventsByUser(req)
 
   const findEvents = Event.aggregate(aggregteOwn).
   exec()
@@ -68,7 +69,7 @@ eventSchema.statics.findOwnEventsPaginate = function(req){
 //Search a favorite events
 
 eventSchema.statics.findFavoriteEventsPaginate = function(req){
-  const aggregteFavorite = eventsFavorite(req)
+  const aggregteFavorite = eventsByUser(req)
 
   const findEvents = Event.aggregate(aggregteFavorite).
   exec()
@@ -78,7 +79,7 @@ eventSchema.statics.findFavoriteEventsPaginate = function(req){
 
 //Search assistants
 eventSchema.statics.findFavoriteAssistantsPaginate = function(req){
-  const aggregteAssistant = eventsAssistant(req)
+  const aggregteAssistant = eventsByUser(req)
 
   const findEvents = Event.aggregate(aggregteAssistant).
   exec()

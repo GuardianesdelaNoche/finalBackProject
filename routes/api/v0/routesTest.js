@@ -66,7 +66,8 @@ router.get('/ownevent', async function(req,res,next){
         req.skip = 0
         req.sort ='desc'
         req.active = false
-        const resultado = await Event.findOwnEventsPaginate(req)
+        
+        const resultado = await Event.findFavoriteEventsPaginate(req)
         
         res.status(201).json({result: resultado})
     } catch (error) {
@@ -86,6 +87,7 @@ router.get('/favoriteevent', async function(req,res,next){
         req.lat=41.545585883662035
         req.long=2.1071972631768157
         req.distance_m = 70000 
+        req.TypeEvent ='favorite'
         
         const resultado = await Event.findFavoriteEventsPaginate(req)
         
@@ -107,8 +109,9 @@ router.get('/assistant', async function(req,res,next){
         req.lat=41.545585883662035
         req.long=2.1071972631768157
         req.distance_m = 70000000
+        req.TypeEvent ='favorite'
         
-        const resultado = await Event.findFavoriteAssistantsPaginate(req)
+        const resultado = await Event.findFavoriteEventsPaginate(req)
         
         res.status(201).json({result: resultado})
     } catch (error) {
