@@ -21,6 +21,10 @@ const eventSchema = mongoose.Schema({
       type: {type: String},
       coordinates: [Number]
     },
+    address: {type: String, index: true },
+    city: {type: String, index: true},
+    postal_code: {type: String, index: true},
+    country: { type: String, index: true },
     created_date: { type: Date, index: true, default: Date.now },
     tags: [String],
     _id_assistants:[{ type: Schema.Types.ObjectId, ref: 'User' }],
@@ -78,7 +82,7 @@ eventSchema.statics.findFavoriteEventsPaginate = function(req){
 }
 
 //Search assistants
-eventSchema.statics.findFavoriteAssistantsPaginate = function(req){
+eventSchema.statics.findAssistantsEventsPaginate = function(req){
   const aggregteAssistant = eventsByUser(req)
 
   const findEvents = Event.aggregate(aggregteAssistant).
@@ -86,6 +90,86 @@ eventSchema.statics.findFavoriteAssistantsPaginate = function(req){
 
   return findEvents
 }
+
+
+//Add new User _id in _id_assistants
+eventSchema.statics.add_id_assistants = function(idUser,idEvent){
+    const updateAssistants =  Event.findByIdAndUpdate(
+        {_id: new mongoose.Types.ObjectId(idEvent) },
+        {$addToSet: {_id_assistants: new mongoose.Types.ObjectId(idUser)} },
+        {new: true}
+    ).exec()
+        return updateAssistants
+};
+
+////Delete User _id in _id_assistants
+eventSchema.statics.del_id_assistants = function(idUser,idEvent){
+    const deleteAssistants =  Event.findByIdAndUpdate(
+        {_id: new mongoose.Types.ObjectId(idEvent) },
+        {$pull: {_id_assistants: new mongoose.Types.ObjectId(idUser) } },
+        {new: true}
+    ).exec()
+        return deleteAssistants
+};
+
+//Add new User _id in _id_favorite
+eventSchema.statics.add_id_favorite = function(idUser,idEvent){
+  const updateFavorites =  Event.findByIdAndUpdate(
+      {_id: new mongoose.Types.ObjectId(idEvent) },
+      {$addToSet: {_id_favorite: new mongoose.Types.ObjectId(idUser) } },
+      {new: true}
+  ).exec()
+      return updateFavorites
+};
+
+////Delete User _id in _id_favorite
+eventSchema.statics.del_id_favorite = function(idUser,idEvent){
+  const deleteFavorites =  Event.findByIdAndUpdate(
+      {_id: new mongoose.Types.ObjectId(idEvent) },
+      {$pull: {_id_favorite: new mongoose.Types.ObjectId(idUser) } },
+      {new: true}
+  ).exec()
+      return deleteFavorites
+};
+
+//Add new User _id in _id_owner
+eventSchema.statics.add_id_owner = function(idUser,idEvent){
+  const updateOwner =  Event.findByIdAndUpdate(
+      {_id: new mongoose.Types.ObjectId(idEvent) },
+      {$addToSet: {_id_owner: new mongoose.Types.ObjectId(idUser) } },
+      {new: true}
+  ).exec()
+      return updateFavorites
+};
+
+
+/////////////////When delete a User//////////////
+////Delete User/Event _id in _id_owner
+eventSchema.statics.del_id_owner = function(idUser){
+  //Delete user events
+  const deleteOwners =  Event.deleteMany(
+      {_id_favorite: new mongoose.Types.ObjectId(idUser)}
+  ).exec()
+      return deleteOwners
+};
+////Delete User _id in all _id_favorite
+eventSchema.statics.del_id_favorites = function(idUser){
+  const deleteAllFavorites =  Event.updateMany(
+      {_id_favorite: new mongoose.Types.ObjectId(idUser) },
+      {$pull: {_id_favorite: new mongoose.Types.ObjectId(idUser) } },
+      {safe: true}
+  ).exec()
+      return deleteAllFavorites
+};
+////Delete User _id in all _id_assistants
+eventSchema.statics.del__id_assistants = function(idUser){
+  const deleteAllAssistants =  Event.updateMany(
+      {_id_assistants: new mongoose.Types.ObjectId(idUser) },
+      {$pull: {_id_assistants: new mongoose.Types.ObjectId(idUser) } },
+      {safe: true}
+  ).exec()
+      return deleteAllAssistants
+};
 
   
 const Event = mongoose.model('Event', eventSchema);
