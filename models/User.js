@@ -51,8 +51,9 @@ userSchema.statics.existsUserName = function(username){
     return isUserName.exec()
 }
 
+//NickName exists in other user that owner
 userSchema.statics.existsNickName = function(nickname){
-    const isUserNickName = User.count({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") }, deleted:null})
+    const isUserNickName = User.count({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
     return isUserNickName.exec()
 }
 
