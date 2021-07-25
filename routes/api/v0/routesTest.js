@@ -111,7 +111,7 @@ router.get('/assistant', async function(req,res,next){
         req.distance_m = 70000000
         req.TypeEvent ='favorite'
         
-        const resultado = await Event.findFavoriteEventsPaginate(req)
+        const resultado = await Event.findAssistantsEventsPaginate(req)
         
         res.status(201).json({result: resultado})
     } catch (error) {
