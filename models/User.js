@@ -42,12 +42,12 @@ userSchema.methods.comparePassword = function(passwordOriginal){
 }
 
 userSchema.statics.existsEmail = function(email){
-    const isUser = User.count({email: { $regex : new RegExp(email.toLowerCase(), "i") }, deleted:null})
+    const isUser = User.count({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
     return isUser.exec()
 }
 
 userSchema.statics.existsUserName = function(username){
-    const isUserName = User.count({username: { $regex : new RegExp(username.toLowerCase(), "i") }, deleted:null})
+    const isUserName = User.count({username: { $regex : new RegExp(username.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
     return isUserName.exec()
 }
 
