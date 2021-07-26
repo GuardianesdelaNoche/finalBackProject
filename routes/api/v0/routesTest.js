@@ -119,5 +119,30 @@ router.get('/assistant', async function(req,res,next){
     }
 });
 
+// Delete all User events
+router.delete('/delUser', async function(req,res,next){
+    try {
+        const idUser = '60e78514162e7719e5684c1d'
+        const delOwners = await Event.del_id_owner(idUser);
+        res.status(201).json({result: delOwners})
+    } catch (error) {
+        next(error)
+    }
+    
+});
+
+//Delete Users assistants in events
+router.put('/delAssistance', async function(req,res,next){
+    try {
+        const idUser = '60e78514162e7719e5684c1d'
+        const delAssistants = await Event.del_id_assistants(idUser);
+        res.status(201).json({result: delAssistants})
+    } catch (error) {
+        next(error)
+    }
+    
+});
+
+
 
 module.exports = router;

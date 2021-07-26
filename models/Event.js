@@ -148,7 +148,7 @@ eventSchema.statics.add_id_owner = function(idUser,idEvent){
 eventSchema.statics.del_id_owner = function(idUser){
   //Delete user events
   const deleteOwners =  Event.deleteMany(
-      {_id_favorite: new mongoose.Types.ObjectId(idUser)}
+      {_id_owner:new mongoose.Types.ObjectId(idUser)}
   ).exec()
       return deleteOwners
 };
@@ -157,16 +157,16 @@ eventSchema.statics.del_id_favorites = function(idUser){
   const deleteAllFavorites =  Event.updateMany(
       {_id_favorite: new mongoose.Types.ObjectId(idUser) },
       {$pull: {_id_favorite: new mongoose.Types.ObjectId(idUser) } },
-      {safe: true}
+      {new: true}
   ).exec()
       return deleteAllFavorites
 };
 ////Delete User _id in all _id_assistants
-eventSchema.statics.del__id_assistants = function(idUser){
+eventSchema.statics.del_id_assistants = function(idUser){
   const deleteAllAssistants =  Event.updateMany(
       {_id_assistants: new mongoose.Types.ObjectId(idUser) },
       {$pull: {_id_assistants: new mongoose.Types.ObjectId(idUser) } },
-      {safe: true}
+      {new: true}
   ).exec()
       return deleteAllAssistants
 };

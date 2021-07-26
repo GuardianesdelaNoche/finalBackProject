@@ -82,6 +82,7 @@ userSchema.statics.getUser = function(idUser){
     return query.exec();
 }
 
+
  //GET User by e-mail
  userSchema.statics.getUserEmail = function(email){
     const query = User.countDocuments({email});
