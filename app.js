@@ -1,25 +1,55 @@
-const express = require('express')
-const app = express()
-const port = 3000
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var cors = require('cors');
+
+var whitelist = ['https://4events.net']
+
+//var indexRouter = require('./routes/index');
+//var usersRouter = require('./routes/users');
+const authController = require('./controllers/authController');
+
+var app = express();
+app.use(cors());
+
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./swagger.yaml');
 
+require('./lib/connectMongoose');
+
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
 /**
- * API URL
+ * Rutas del API
+ */
+app.post('/api/v1/user/login', authController.postJWT);
+app.use('/api/v1/user/register', require('./routes/api/v1/register'));
+app.use('/api/v1/events', require('./routes/api/v1/event'));
+app.use('/api/v1/tags', require('./routes/api/v1/tag'));
+
+
+app.use('/api/v1/users', require('./routes/api/v1/users'));
+app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
+//app.use('/', indexRouter);
+//app.use('/users', usersRouter);
+
+/**
+ * Swagger 
  */
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-app.use('/api-doc',            swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+ app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
 // catch 404 and forward to error handler
@@ -29,36 +59,22 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-
-  // validation error
-  if(err.array) {
-    const errorInfo = err.array({onlyFirstError: true})[0];
-    err.message = `Not valid - ${errorInfo.param} ${errorInfo.msg}`;
-    err.status = 422;
-  }
-  
-
-  res.status(err.status || 500);
-   
-;  if(isApiRequest(req))
-  {
-    return res.json ({error: err.message});
-  }
-
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.render('error');
+  res.status(err.status || 500);
 
+  if (isAPIRequest(req)) {
+    return res.json({ error: err.message });
+  }
+
+  res.render('error');
 });
 
-function isApiRequest(req){
-  
-  return req.originalUrl.indexOf('/api/') === 0 ;
+function isAPIRequest(req) {
+  return req.originalUrl.indexOf('/api/') === 0;
 }
 
-
 module.exports = app;
-

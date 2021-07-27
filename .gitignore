@@ -1,3 +1,8 @@
 /node_modules/*
 .env
 /uploads/*
+*.log
+*.db
+.DS_Store
+.vscode
+/public/images/*
