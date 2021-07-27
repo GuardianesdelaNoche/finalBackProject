@@ -58,7 +58,18 @@ eventSchema.statics.list = async function (filters, startRow, numRows, sortField
     return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
 }
 
+eventSchema.statics.listCount = async function (filters, cb) {
+ 
+  const query = Event.find(filters)
+  
+  const result = {}
 
+  result.rows = await query.exec()
+  result.total = await query.count()
+
+  if (cb) return cb(null, result) // si me dan callback devuelvo los resultados por ahí
+  return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
+}
 
 //Search own events with paginate
 eventSchema.statics.findOwnEventsPaginate = function(req){

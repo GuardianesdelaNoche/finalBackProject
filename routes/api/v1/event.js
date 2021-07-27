@@ -66,7 +66,8 @@ router.get('/', async function (req, res, next) {
     }
   
    
-    const {total, rows} = await Event.list(filters, skip, limit, sort, includeTotal)
+    const {rows} = await Event.list(filters, skip, limit, sort, includeTotal)
+    const {total} = await Event.listCount(filters)
     res.json({ total, events: rows })
   } catch (error) { 
     const errorModify = error.toString().split(':')[1].trim();
