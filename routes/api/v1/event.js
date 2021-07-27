@@ -32,7 +32,7 @@ const upload = multer({
 router.get('/', async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
-    const limit = parseInt(req.query.limit) || 10
+    const limit = parseInt(req.query.limit) || 0
     const sort = req.query.sort || 'date'
     const includeTotal = true
 
