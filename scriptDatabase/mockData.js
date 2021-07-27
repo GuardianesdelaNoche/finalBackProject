@@ -20,7 +20,7 @@ const Event = require('../models/Event');
                     type: 'Point',
                     coordinates: [ faker.address.longitude(), faker.address.latitude() ]
                   },
-                 address: faker.address.direction(),
+                 address: faker.address.streetAddress(),
                  city: faker.address.cityName(),
                  postal_code: faker.address.zipCode(),
                  country: faker.address.country(),
