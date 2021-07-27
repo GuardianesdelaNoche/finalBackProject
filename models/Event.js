@@ -6,7 +6,8 @@ const User = require('./User');
 // const eventsOwn = require('../lib/eventsOwn');
 // const eventsFavorite = require('../lib/eventsFavorite');
 // const eventsAssistant = require('../lib/eventsAssistant')
-const eventsByUser = require('../lib/eventsByUser')
+const eventsByUser = require('../lib/eventsByUser');
+const eventsAll = require('../lib/eventsAll')
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -38,32 +39,35 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
     new Event(nuevo).save(cb)
   }
   
-eventSchema.statics.list = async function (filters, startRow, numRows, sortField, cb) {
+eventSchema.statics.list = async function (filters, startRow, numRows, sortField, authenticate,cb) {
 
-  console.log(filters);
-  const result = {}
+    console.log('filters',filters);
+    const result = {}
+    const aggregteAll = eventsAll(filters, startRow, numRows, sortField, authenticate)
+    console.log('Agregate',aggregteAll);
+    const query = Event.aggregate(aggregteAll
+//   [   
+//       {
+//           $match: filters   
+//       },
+//       {$facet:{
+//           "result":[
+//               { $sort: { "date": sortField }},
+//               {
+//                   $skip: startRow
+//               },
+//               {
+//                   $limit: numRows
+//               },
 
-  const query = Event.aggregate([   
-      {
-          $match: filters   
-      },
-      {$facet:{
-          "result":[
-              { $sort: { "date": sortField }},
-              {
-                  $skip: startRow
-              },
-              {
-                  $limit: numRows
-              },
-
-          ],
-          "total":[
-              { "$count" : "count" }
-          ],
-      }
-    }, 
-  ])
+//           ],
+//           "total":[
+//               { "$count" : "count" }
+//           ],
+//       }
+//     }, 
+//   ]
+)
   result.rows = await query.exec();
   if (cb) return cb(null, result) // si me dan callback devuelvo los resultados por ahí
   return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
