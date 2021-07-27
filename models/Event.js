@@ -38,26 +38,35 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
     new Event(nuevo).save(cb)
   }
   
-eventSchema.statics.list = async function (filters, startRow, numRows, sortField, includeTotal, cb) {
- 
-    const query = Event.find(filters)
-    
-    query.sort(sortField)
-   
-    const result = {}
-  
-    result.rows = await query.exec()
-  
-    if (includeTotal) {
-      result.total = await query.count()
-    }
+eventSchema.statics.list = async function (filters, startRow, numRows, sortField, cb) {
 
-    query.skip(startRow)
-    query.limit(numRows)
+  console.log(filters);
+  const result = {}
 
+  const query = Event.aggregate([   
+      {
+          $match: filters   
+      },
+      {$facet:{
+          "result":[
+              { $sort: { "date": sortField }},
+              {
+                  $skip: startRow
+              },
+              {
+                  $limit: numRows
+              },
 
-    if (cb) return cb(null, result) // si me dan callback devuelvo los resultados por ahí
-    return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
+          ],
+          "total":[
+              { "$count" : "count" }
+          ],
+      }
+    }, 
+  ])
+  result.rows = await query.exec();
+  if (cb) return cb(null, result) // si me dan callback devuelvo los resultados por ahí
+  return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
 }
 
 

@@ -32,10 +32,8 @@ const upload = multer({
 router.get('/', async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
-    const limit = parseInt(req.query.limit) || 0
-    const sort = req.query.sort || 'date'
-    const includeTotal = true
-
+    const limit = parseInt(req.query.limit) || 1000
+    const sort = req.query.sort ==='asc' ? 1 : -1
     const filters = { date: { '$gte': new Date(Date.now())}}
     
     if (req.query.title) {
@@ -46,7 +44,7 @@ router.get('/', async function (req, res, next) {
     }
 
     if (req.query.tags) {
-      filters.tags = { $in: req.query.tags };
+      filters.tags = req.query.tags;
     }
 
     if (typeof req.query.price !== 'undefined' && req.query.price !== '-') {
@@ -66,7 +64,7 @@ router.get('/', async function (req, res, next) {
     }
   
    
-    const {total, rows} = await Event.list(filters, skip, limit, sort, includeTotal)
+    const {total, rows} = await Event.list(filters, skip, limit, sort)
     res.json({ total, events: rows })
   } catch (error) { 
     const errorModify = error.toString().split(':')[1].trim();
