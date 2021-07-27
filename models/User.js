@@ -41,8 +41,10 @@ userSchema.methods.comparePassword = function(passwordOriginal){
     return bcrypt.compare(passwordOriginal, this.password);
 }
 
-userSchema.statics.existsEmail = function(email){
-    const isUser = User.count({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
+userSchema.statics.existsEmail = function(email,id){
+    const idUser_2 = new mongoose.Types.ObjectId(id)
+    const isUser = User.countDocuments({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:idUser_2, deleted:null})
+  
     return isUser.exec()
 }
 

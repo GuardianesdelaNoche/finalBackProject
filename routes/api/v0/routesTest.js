@@ -143,6 +143,23 @@ router.put('/delAssistance', async function(req,res,next){
     
 });
 
+//Exists Email
+router.get('/existEmail', async function(req,res,next){
+
+    try {
+        //req.sort = 'asc' or 'desc'
+        req.id= '60f49f376eb9eb0f543c3f94'
+        req.email='josep.mercader@gmail.com'
+        const resultado = await User.existsEmail(req.email,req.id);
+        console.log('Resultado email+id: ',resultado)
+        const resultado2 = await User.getUserEmail(req.email);
+        console.log('Resultado email: ',resultado2)
+        
+        res.status(201).json({result: resultado, resultado2})
+    } catch (error) {
+        next(error)
+    }
+});
 
 
 module.exports = router;

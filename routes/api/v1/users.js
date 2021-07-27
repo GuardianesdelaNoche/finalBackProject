@@ -9,7 +9,8 @@ const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
 const sendingMail = require('../../../lib/nodeMail');
 const recoverPassController = require('../../../controllers/recoverPassController');
-const fs = require('fs');
+const {expresValidate} = require('../../../lib/expressValidate')
+//const fs = require('fs');
 
 const User = require('../../../models/User');
 const Event = require('../../../models/Event')
@@ -158,9 +159,12 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
              return true
          }
      }),
-     body('email').optional().custom(async email=>{
-         const resultE = await User.existsEmail(email);
-         if (resultE >0){
+     body('email').optional().custom(async(email,{req})=>{
+        const resultEI = expresValidate(req);
+         //const resultE_Id = await User.existsEmail(email);
+         //const resutlE = await User.getUserEmail(email);
+         
+         if (resultEI.resutlE>0 && resultEI.resultE_Id===0){
              throw new Error(`Email already exists: ${email}`);
          } else {
              return true
@@ -190,8 +194,8 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
 async (req, res, next) =>{
  try {
     const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
-    
     if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
+        req.body.idActiveUser = idUser;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array()});
