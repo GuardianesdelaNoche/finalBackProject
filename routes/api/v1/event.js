@@ -108,7 +108,7 @@ router.post('/', upload,[
 ], async (req, res, next) => {
 
   try {
-    const {title, price, date, duration, indoor, tags, _id_assistants} = req.body;
+    const { title, price, date, duration, indoor, address, city, postal_code, country, tags } = req.body;
 
     const description = req.body.description ? req.body.description : '';
     const max_places = req.body.max_places ? req.body.max_places : 0;
@@ -139,7 +139,7 @@ router.post('/', upload,[
       return res.status(500).json({message: "The price cannot be higher than 99"})
     }
 
-    const event = new Event({title, description, price, max_places, date, duration, indoor, tags, _id_assistants, 
+    const event = new Event({title, description, price, max_places, date, duration, indoor,address, city, postal_code, country,tags, 
                             photo: namePhoto, location: {
                               type: 'Point',
                               coordinates: coordinates
@@ -191,7 +191,7 @@ router.put('/:_id', upload,[
 
   try {
     const { _id } = req.params;
-    const { title, price, date, duration, indoor, tags } = req.body;
+    const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
 
     const description = req.body.description ? req.body.description : '';
     const max_places = req.body.max_places ? req.body.max_places : 0;
