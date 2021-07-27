@@ -8,6 +8,7 @@ const {body, validationResult} = require('express-validator');
 const path = require('path');
 const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
+const expressValidateUsername = require('../../../lib/expressValidateUsername')
 
 
 const User = require('../../../models/User');
@@ -153,6 +154,24 @@ router.get('/existEmail', async function(req,res,next){
         const resultado = await User.existsEmail(req.email,req.id);
         console.log('Resultado email+id: ',resultado)
         const resultado2 = await User.getUserEmail(req.email);
+        console.log('Resultado email: ',resultado2)
+        
+        res.status(201).json({result: resultado, resultado2})
+    } catch (error) {
+        next(error)
+    }
+});
+
+//Exists Email
+router.get('/existUsername', async function(req,res,next){
+
+    try {
+        //req.sort = 'asc' or 'desc'
+        req.id= '60f49f376eb9eb0f543c3f94'
+        req.username='Pepe pruebas'
+        const resultado = await User.existsUserNameId(req.id);
+        console.log('Resultado email+id: ',resultado)
+        const resultado2 = await User.existsUserName(req.username);
         console.log('Resultado email: ',resultado2)
         
         res.status(201).json({result: resultado, resultado2})

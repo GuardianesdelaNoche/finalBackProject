@@ -9,7 +9,9 @@ const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
 const sendingMail = require('../../../lib/nodeMail');
 const recoverPassController = require('../../../controllers/recoverPassController');
-const {expresValidate} = require('../../../lib/expressValidate')
+const expresValidateEmail = require('../../../lib/expressValidateEmail')
+const expressValidateUsername = require('../../../lib/expressValidateUsername')
+const expressValidateNickname = require('../../../lib/expressValidateNickname')
 //const fs = require('fs');
 
 const User = require('../../../models/User');
@@ -160,29 +162,29 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
          }
      }),
      body('email').optional().custom(async(email,{req})=>{
-        const resultEI = expresValidate(req);
-         //const resultE_Id = await User.existsEmail(email);
-         //const resutlE = await User.getUserEmail(email);
-         
-         if (resultEI.resutlE>0 && resultEI.resultE_Id===0){
+        const resultEI = await expresValidateEmail(req);
+        
+         if (resultEI.resultE>0 && resultEI.resultE_Id===0){
              throw new Error(`Email already exists: ${email}`);
          } else {
              return true
          }
      }).escape().withMessage('E-mail already exists'),
      
-     body('username').optional().custom(async username=>{
-         const resultU = await User.existsUserName(username);
-         if (resultU >0){
+     body('username').optional().custom(async (username,{req})=>{
+        const resultUI = await expressValidateUsername(req)
+
+         if (resultUI.resultU >0 && resultUI.resultU_Id===0){
              throw new Error(`Username already exists: ${username}`);
          } else {
              return true
          }
      }).escape().withMessage('Username, already exists'),
      
-     body('nickname').optional().custom(async nickname=>{
-         const resultN = await User.existsNickName(nickname);
-         if (resultN >0){
+     body('nickname').optional().custom(async (nickname, {req})=>{
+         const resultNI = await expressValidateNickname(req)
+
+         if (resultNI.resultN >0 && resultNI.resultN_Id===0){
              throw new Error(`Nickname already exists: ${nickname}`);
          } else {
              return true

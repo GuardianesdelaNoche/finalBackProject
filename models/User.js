@@ -41,6 +41,7 @@ userSchema.methods.comparePassword = function(passwordOriginal){
     return bcrypt.compare(passwordOriginal, this.password);
 }
 
+//Validate exists email and user id 
 userSchema.statics.existsEmail = function(email,id){
     const idUser_2 = new mongoose.Types.ObjectId(id)
     const isUser = User.countDocuments({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:idUser_2, deleted:null})
@@ -48,14 +49,28 @@ userSchema.statics.existsEmail = function(email,id){
     return isUser.exec()
 }
 
+//UserName exists in the same user that owner
+userSchema.statics.existsUserNameId = function(username,id){
+    const idUser_2 = new mongoose.Types.ObjectId(id)
+    const isUserNameId = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },_id:idUser_2, deleted:null})
+    return isUserNameId.exec()
+}
+
+//NickName exists in the same user that owner
+userSchema.statics.existsNickNameId = function(nickname,id){
+    const idUser_2 = new mongoose.Types.ObjectId(id)
+    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },_id:idUser_2, deleted:null})
+    return isUserNickName.exec()
+}
+//Username exists
 userSchema.statics.existsUserName = function(username){
-    const isUserName = User.count({username: { $regex : new RegExp(username.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
+    const isUserName = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },deleted:null})
     return isUserName.exec()
 }
 
-//NickName exists in other user that owner
+//NickName exists
 userSchema.statics.existsNickName = function(nickname){
-    const isUserNickName = User.count({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },_id:{$ne:req.apiAuthUserId}, deleted:null})
+    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },deleted:null})
     return isUserNickName.exec()
 }
 
