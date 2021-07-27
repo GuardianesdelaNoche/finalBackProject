@@ -27,9 +27,9 @@ const eventSchema = mongoose.Schema({
     country: { type: String, index: true },
     created_date: { type: Date, index: true, default: Date.now },
     tags: [String],
-    _id_assistants:[{ type: Schema.Types.ObjectId, ref: 'User' }],
+    _id_assistants:[{ type: Schema.Types.ObjectId, ref: 'User',index:true }],
     _id_owner:[{type: Schema.Types.ObjectId, ref: 'User',index:true}],
-    _id_favorite: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    _id_favorite: [{ type: Schema.Types.ObjectId, ref: 'User',index:true }],
 });
 
 eventSchema.index({ "location": "2dsphere" });
