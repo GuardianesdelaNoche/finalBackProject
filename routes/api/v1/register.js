@@ -70,7 +70,7 @@ router.post('/', upload,
             }
         }),
         body('email').custom(async email=>{
-            const resultE = await User.existsEmail(email);
+            const resultE = await User.getUserEmail(email);
             if (resultE >0){
                 throw new Error(`Email already exists: ${email}`);
             } else {
