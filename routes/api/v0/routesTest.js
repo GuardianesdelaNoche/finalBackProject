@@ -62,11 +62,11 @@ router.get('/ownevent', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60f49f376eb9eb0f543c3f94'
-        req.limit = 100
-        req.skip = 0
-        req.sort ='desc'
-        req.active = false
+        req.apiAuthUserId= '60f49f376eb9eb0f543c3f94'
+        req.query.limit = 100
+        req.query.skip = 0
+        req.query.sort ='desc'
+        req.query.active = false
         
         const resultado = await Event.findFavoriteEventsPaginate(req)
         
@@ -80,15 +80,15 @@ router.get('/favoriteevent', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60e779f912b1cf13935c7e77'
-        req.limit = 100
-        req.skip = 0
-        req.sort ='desc'
-        req.active = false
-        req.lat=41.545585883662035
-        req.long=2.1071972631768157
-        req.distance_m = 70000 
-        req.TypeEvent ='favorite'
+        req.query.apiAuthUserId= '60e779f912b1cf13935c7e77'
+        req.query.limit = 100
+        req.query.skip = 0
+        req.query.sort ='desc'
+        req.query.active = false
+        req.query.lat=41.545585883662035
+        req.query.long=2.1071972631768157
+        req.query.distance_m = 70000 
+        req.query.TypeEvent ='favorite'
         
         const resultado = await Event.findFavoriteEventsPaginate(req)
         
@@ -102,15 +102,16 @@ router.get('/assistant', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60e779f912b1cf13935c7e77'
-        req.limit = 100
-        req.skip = 0
-        req.sort ='desc'
-        req.active = false
-        req.lat=41.545585883662035
-        req.long=2.1071972631768157
-        req.distance_m = 70000000
-        req.TypeEvent ='favorite'
+        req.apiAuthUserId= '60f1d5a450cb72aee3c52794'
+        //req.id= '60f49f376eb9eb0f543c3f94'
+        req.query.limit = 100
+        req.query.skip = 0
+        req.query.sort ='desc'
+        req.query.active = false
+        req.query.lat=41.545585883662035
+        req.query.long=2.1071972631768157
+        req.query.distance_m = 70000000
+        req.query.TypeEvent ='favorite'
         
         const resultado = await Event.findAssistantsEventsPaginate(req)
         
@@ -135,7 +136,8 @@ router.delete('/delUser', async function(req,res,next){
 //Delete Users assistants in events
 router.put('/delAssistance', async function(req,res,next){
     try {
-        const idUser = '60e78514162e7719e5684c1d'
+        req.id= '60f1d5a450cb72aee3c52794'
+        //req.id= '60f49f376eb9eb0f543c3f94'
         const delAssistants = await Event.del_id_assistants(idUser);
         res.status(201).json({result: delAssistants})
     } catch (error) {
@@ -149,7 +151,8 @@ router.get('/existEmail', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60f49f376eb9eb0f543c3f94'
+        req.id= '60f1d5a450cb72aee3c52794'
+        //req.id= '60f49f376eb9eb0f543c3f94'
         req.email='josep.mercader@gmail.com'
         const resultado = await User.existsEmail(req.email,req.id);
         console.log('Resultado email+id: ',resultado)
@@ -167,7 +170,8 @@ router.get('/existUsername', async function(req,res,next){
 
     try {
         //req.sort = 'asc' or 'desc'
-        req.id= '60f49f376eb9eb0f543c3f94'
+        req.id= '60f1d5a450cb72aee3c52794'
+        //req.id= '60f49f376eb9eb0f543c3f94'
         req.username='Pepe pruebas'
         const resultado = await User.existsUserNameId(req.id);
         console.log('Resultado email+id: ',resultado)
