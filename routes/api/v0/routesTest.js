@@ -1,5 +1,7 @@
 
 'use strict'
+const mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 var express = require('express');
 var router = express.Router();
@@ -184,5 +186,20 @@ router.get('/existUsername', async function(req,res,next){
     }
 });
 
+router.get('/events' , async function(req,res,next){
+
+
+try {
+    //req.sort = 'asc' or 'desc'
+    req.id= '6101795a0160fe0ac7e0536a'
+    //req.id= '60f49f376eb9eb0f543c3f94'
+    
+    const resultado = await Event.findById(new mongoose.Types.ObjectId(req.id)).exec();
+    
+    res.status(201).json({result: resultado})
+} catch (error) {
+    next(error)
+}
+})
 
 module.exports = router;
