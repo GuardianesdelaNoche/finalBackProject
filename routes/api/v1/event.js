@@ -97,6 +97,23 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
   }
+});
+
+router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
+  try {
+    const eventId = req.params._id;
+    const latitude='';
+    const longitude='';
+    const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
+    const event = await Event.listOne(authenticate,eventId,latitude,longitude)
+    const resultEnd = event[0];
+    const {result} = resultEnd;
+
+    return res.status(200).json({events: result});
+
+  } catch (error) { 
+    next(error)
+  }
 })
 
 router.post('/', jwtAuth, upload,[
