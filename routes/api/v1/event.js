@@ -66,9 +66,13 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     }
   
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-    
-    const {total, rows} = await Event.list(filters, skip, limit, sort, authenticate)
-    res.json({ total, events: rows })
+
+    const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
+    const resultEnd = rows[0];
+    const {total,result} = resultEnd;
+    const {count} = total[0]
+    res.json({ total:count, events: result })
+
   } catch (error) { 
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });

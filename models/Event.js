@@ -41,10 +41,8 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
   
 eventSchema.statics.list = async function (filters, startRow, numRows, sortField, authenticate,cb) {
 
-    console.log('filters',filters);
     const result = {}
     const aggregteAll = eventsAll(filters, startRow, numRows, sortField, authenticate)
-    console.log('Agregate',aggregteAll);
     const query = Event.aggregate(aggregteAll
 //   [   
 //       {
