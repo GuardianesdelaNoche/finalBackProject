@@ -5,6 +5,8 @@ const Event = require('../../../models/Event');
 const path = require('path');
 const multer = require('multer');
 const {body,validationResult} = require('express-validator');
+const jwtAuth = require('../../../lib/jwtAuth');
+const jwtAuthOptional = require('../../../lib/jwtAuthOptional');
 
 
 
@@ -29,7 +31,7 @@ const upload = multer({
 }).single('photo')
 
 /* GET events . */
-router.get('/', async function (req, res, next) {
+router.get('/',jwtAuthOptional, async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit) || 1000
@@ -63,9 +65,14 @@ router.get('/', async function (req, res, next) {
       }
     }
   
-   
-    const {total, rows} = await Event.list(filters, skip, limit, sort)
-    res.json({ total, events: rows })
+    const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
+
+    const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
+    const resultEnd = rows[0];
+    const {total,result} = resultEnd;
+    const {count} = total[0]
+    res.json({ total:count, events: result })
+
   } catch (error) { 
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
