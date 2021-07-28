@@ -7,7 +7,8 @@ const User = require('./User');
 // const eventsFavorite = require('../lib/eventsFavorite');
 // const eventsAssistant = require('../lib/eventsAssistant')
 const eventsByUser = require('../lib/eventsByUser');
-const eventsAll = require('../lib/eventsAll')
+const eventsAll = require('../lib/eventsAll');
+const eventsOne = require('../lib/eventsOne');
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -49,6 +50,13 @@ eventSchema.statics.list = async function (filters, startRow, numRows, sortField
   return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
 }
 
+//List one Event by Id and aggregate ans populate with users
+eventSchema.statics.listOne = function (authenticate,eventId,latitude,longitude) {
+  const aggregteOne = eventsOne(authenticate,eventId,latitude,longitude)
+  const query = Event.aggregate(aggregteOne).exec();
+  
+  return query;
+}
 
 
 //Search own events with paginate
