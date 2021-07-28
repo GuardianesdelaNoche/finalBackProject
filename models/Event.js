@@ -152,7 +152,7 @@ eventSchema.statics.add_id_owner = function(idUser,idEvent){
       {$addToSet: {_id_owner: new mongoose.Types.ObjectId(idUser) } },
       {new: true}
   ).exec()
-      return updateFavorites
+      return updateOwner 
 };
 
 

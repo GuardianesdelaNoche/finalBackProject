@@ -2,6 +2,7 @@
 
 const router = require('express').Router();
 const Event = require('../../../models/Event');
+//const User = require('../../../models/User');
 const path = require('path');
 const multer = require('multer');
 const {body,validationResult} = require('express-validator');
@@ -79,7 +80,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
   }
 })
 
-router.get('/:_id', async function (req, res, next) {
+router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const _id = req.params._id;
 
@@ -98,7 +99,7 @@ router.get('/:_id', async function (req, res, next) {
   }
 })
 
-router.post('/', upload,[
+router.post('/', jwtAuth, upload,[
   body('title').not().isEmpty().trim().escape().withMessage('The title is required'),
   body('price').not().isEmpty().withMessage('The price is required'),
   body('price').optional().isNumeric().withMessage('The price must be numeric'),
@@ -137,11 +138,11 @@ router.post('/', upload,[
     }
 
     if (duration <= 5) {
-      return res.status(500).json({message: "The price cannot be lower than or equal 5"})
+      return res.status(500).json({message: "Duration cannot be lower than or equal 5"})
     }
 
-    if (duration >= 99) {
-      return res.status(500).json({message: "The price cannot be higher than 99"})
+    if (duration >= 999) {
+      return res.status(500).json({message: "Duration cannot be higher than 999"})
     }
 
     const event = new Event({title, description, price, max_places, date, duration, indoor,address, city, postal_code, country,tags, 
@@ -150,8 +151,11 @@ router.post('/', upload,[
                               coordinates: coordinates
                             }})
   
-    await event.save();
-  
+    const saveResult = await event.save();
+   
+    //Insert register in _id_owner
+    const addId = await Event.add_id_owner (req.apiAuthUserId,event._id)
+   
     res.status(201).json({ result: event});    
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
@@ -161,7 +165,7 @@ router.post('/', upload,[
 
 });
 
-router.delete('/:_id', async (req, res, next) => {
+router.delete('/:_id', jwtAuth, async (req, res, next) => {
   try {
     const { _id } = req.params;
     const deletedEvent = await Event.findByIdAndDelete(_id);
@@ -180,7 +184,7 @@ router.delete('/:_id', async (req, res, next) => {
 
 });
 
-router.put('/:_id', upload,[
+router.put('/:_id', jwtAuth, upload,[
   body('title').optional().not().isEmpty().trim().escape().withMessage('The title is required'),
   body('price').optional().not().isEmpty().withMessage('The price is required'),
   body('price').optional().isNumeric().withMessage('The price must be numeric'),
