@@ -29,7 +29,7 @@ const upload = multer({
 }).single('photo')
 
 /* GET events . */
-router.get('/',jwtAuthOptional, async function (req, res, next) {
+router.get('/', async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit) || 1000
@@ -77,6 +77,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
   }
 })
 
+
 //Get one event by _id with basic data
 router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
@@ -96,6 +97,7 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
     return res.status(500).json({ message: errorModify });
   }
 });
+
 //Get one event by _id with data calculated and populate data owner event.
 router.get('/event/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
