@@ -106,8 +106,6 @@ router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
     const event = await Event.listOne(authenticate,eventId,latitude,longitude)
     const resultEnd = event[0];
     const {result} = resultEnd;
-    console.log(result[0])
-
     return res.status(200).json({event: result[0]});
 
   } catch (error) { 
