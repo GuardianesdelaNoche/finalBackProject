@@ -32,7 +32,7 @@ const upload = multer({
 }).single('photo')
 
 /* GET events . */
-router.get('/',jwtAuthOptional, async function (req, res, next) {
+router.get('/', async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit) || 1000
@@ -80,7 +80,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
   }
 })
 
-router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
+router.get('/:_id', async function (req, res, next) {
   try {
     const _id = req.params._id;
 
@@ -99,7 +99,7 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   }
 });
 
-router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
+router.get('/one/:_id', async function (req, res, next) {
   try {
     const eventId = req.params._id;
     const latitude='';
