@@ -2,14 +2,11 @@
 
 const router = require('express').Router();
 const Event = require('../../../models/Event');
-//const User = require('../../../models/User');
 const path = require('path');
 const multer = require('multer');
 const {body,validationResult} = require('express-validator');
 const jwtAuth = require('../../../lib/jwtAuth');
 const jwtAuthOptional = require('../../../lib/jwtAuthOptional');
-
-
 
 const storage = multer.diskStorage({
   destination : './public/images/photoEvent',
@@ -80,7 +77,9 @@ router.get('/', async function (req, res, next) {
   }
 })
 
-router.get('/:_id', async function (req, res, next) {
+
+//Get one event by _id with basic data
+router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const _id = req.params._id;
 
@@ -99,7 +98,9 @@ router.get('/:_id', async function (req, res, next) {
   }
 });
 
-router.get('/one/:_id', async function (req, res, next) {
+//Get one event by _id with data calculated and populate data owner event.
+router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
+
   try {
     const eventId = req.params._id;
     const latitude='';
@@ -108,8 +109,7 @@ router.get('/one/:_id', async function (req, res, next) {
     const event = await Event.listOne(authenticate,eventId,latitude,longitude)
     const resultEnd = event[0];
     const {result} = resultEnd;
-
-    return res.status(200).json({events: result});
+    return res.status(200).json({event: result[0]});
 
   } catch (error) { 
     next(error)
