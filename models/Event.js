@@ -7,7 +7,8 @@ const User = require('./User');
 // const eventsFavorite = require('../lib/eventsFavorite');
 // const eventsAssistant = require('../lib/eventsAssistant')
 const eventsByUser = require('../lib/eventsByUser');
-const eventsAll = require('../lib/eventsAll')
+const eventsAll = require('../lib/eventsAll');
+const eventsOne = require('../lib/eventsOne');
 
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
@@ -39,38 +40,23 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
     new Event(nuevo).save(cb)
   }
   
-eventSchema.statics.list = async function (filters, startRow, numRows, sortField, authenticate,cb) {
+eventSchema.statics.list = async function (filters, startRow, numRows, sortField, authenticate,latitude,longitude,distance,cb) {
 
-    const result = {}
-    const aggregteAll = eventsAll(filters, startRow, numRows, sortField, authenticate)
-    const query = Event.aggregate(aggregteAll
-//   [   
-//       {
-//           $match: filters   
-//       },
-//       {$facet:{
-//           "result":[
-//               { $sort: { "date": sortField }},
-//               {
-//                   $skip: startRow
-//               },
-//               {
-//                   $limit: numRows
-//               },
-
-//           ],
-//           "total":[
-//               { "$count" : "count" }
-//           ],
-//       }
-//     }, 
-//   ]
-)
+  const result = {}
+  const aggregteAll = eventsAll(filters, startRow, numRows, sortField, authenticate,latitude,longitude,distance)
+  const query = Event.aggregate(aggregteAll)
   result.rows = await query.exec();
   if (cb) return cb(null, result) // si me dan callback devuelvo los resultados por ahí
   return result // si no, los devuelvo por la promesa del async (async está en la primera linea de esta función)
 }
 
+//List one Event by Id and aggregate ans populate with users
+eventSchema.statics.listOne = function (authenticate,eventId,latitude,longitude) {
+  const aggregteOne = eventsOne(authenticate,eventId,latitude,longitude)
+  const query = Event.aggregate(aggregteOne).exec();
+  
+  return query;
+}
 
 
 //Search own events with paginate
@@ -164,7 +150,8 @@ eventSchema.statics.add_id_owner = function(idUser,idEvent){
       {$addToSet: {_id_owner: new mongoose.Types.ObjectId(idUser) } },
       {new: true}
   ).exec()
-      return updateOwner
+
+      return updateOwner 
 };
 
 
