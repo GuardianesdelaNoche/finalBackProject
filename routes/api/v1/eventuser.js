@@ -5,6 +5,8 @@ const User = require ('../../../models/User');
 const jwtAuth = require('../../../lib/jwtAuth');
 
 
+/* GET owner events */
+
 router.get('/ownevent',jwtAuth, async function(req, res, next) {
   try {
     
@@ -20,7 +22,7 @@ router.get('/ownevent',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events_own: result })
+    res.json({ total:count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
@@ -39,7 +41,7 @@ router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
     req.query.long
     req.query.lat
     req.query.distance_m
-    req.query.TypeEvent = 'favorte'
+    req.query.typeSearch = 'favorite'
 
     const {rows} = await Event.findFavoriteEventsPaginate(req)
     const resultEnd = rows[0];
@@ -47,12 +49,15 @@ router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events_favorites: result })
+    res.json({ total:count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
   }
 });
+
+
+/* GET assistant events */
 
 router.get('/assistant',jwtAuth, async function(req, res, next) {
   try {
@@ -65,7 +70,7 @@ router.get('/assistant',jwtAuth, async function(req, res, next) {
     req.query.long
     req.query.lat
     req.query.distance_m
-    req.query.TypeEvent = 'assistant'
+    req.query.typeSearch = 'assistant'
 
     const {rows} = await Event.findAssistantsEventsPaginate(req)
     const resultEnd = rows[0];
@@ -73,59 +78,11 @@ router.get('/assistant',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events_assistants: result })
+    res.json({ total:count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-router.put('/add-fav-events', async function(req, res, next) {
-    try {
-      const {idUser, idEvent} = req.body;
-      console.log(idUser, idEvent);
-      const addFavorite = await User.addFavEvents(idUser, idEvent)    
-      res.status(201).json({result:addFavorite})
-    } catch (error) {
-      const errorModify = error.toString().split(':')[1].trim();
-      return res.status(500).json({ message: error });
-    }
-});
-
-
-router.put('/add-events', async function(req, res, next) {
-    try {
-      const {idUser, idEvent} = req.body;
-      console.log(idUser, idEvent);
-      const addFavorite = await Event.add_id_favorite(idUser, idEvent)    
-      res.status(201).json({result:addFavorite})
-    } catch (error) {
-      const errorModify = error.toString().split(':')[1].trim();
-      return res.status(500).json({ message: error });
-    }
-});
-
-router.put('/add-owner', async function(req, res, next) {
-    try {
-      const {idUser, idEvent} = req.body;
-      console.log(idUser, idEvent);
-      const addFavorite = await Event.add_id_owner(idUser, idEvent)    
-      res.status(201).json({result:addFavorite})
-    } catch (error) {
-      const errorModify = error.toString().split(':')[1].trim();
-      return res.status(500).json({ message: error });
-    }
-});*/
 module.exports = router;
