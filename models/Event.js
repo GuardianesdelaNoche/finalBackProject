@@ -74,34 +74,46 @@ eventSchema.statics.list = async function (filters, startRow, numRows, sortField
 
 
 //Search own events with paginate
-eventSchema.statics.findOwnEventsPaginate = function(req){
+eventSchema.statics.findOwnEventsPaginate = async function(req){
+
+  const result = {}
+
   const aggregteOwn = eventsByUser(req)
 
-  const findEvents = Event.aggregate(aggregteOwn).
-  exec()
+  const findEvents = Event.aggregate(aggregteOwn)
 
-  return findEvents
+  result.rows = await findEvents.exec();
+
+  return result
 }
 
 //Search a favorite events
 
-eventSchema.statics.findFavoriteEventsPaginate = function(req){
+eventSchema.statics.findFavoriteEventsPaginate = async function(req){
+
+  const result = {}
+
   const aggregteFavorite = eventsByUser(req)
 
-  const findEvents = Event.aggregate(aggregteFavorite).
-  exec()
+  const findEvents = Event.aggregate(aggregteFavorite)
 
-  return findEvents
+  result.rows = await findEvents.exec();
+
+
+  return result
 }
 
 //Search assistants
-eventSchema.statics.findAssistantsEventsPaginate = function(req){
+eventSchema.statics.findAssistantsEventsPaginate = async function(req){
+  const result = {}
+
   const aggregteAssistant = eventsByUser(req)
 
-  const findEvents = Event.aggregate(aggregteAssistant).
-  exec()
+  const findEvents = Event.aggregate(aggregteAssistant)
 
-  return findEvents
+  result.rows = await findEvents.exec();
+
+  return result;
 }
 
 
@@ -152,7 +164,7 @@ eventSchema.statics.add_id_owner = function(idUser,idEvent){
       {$addToSet: {_id_owner: new mongoose.Types.ObjectId(idUser) } },
       {new: true}
   ).exec()
-      return updateFavorites
+      return updateOwner
 };
 
 
