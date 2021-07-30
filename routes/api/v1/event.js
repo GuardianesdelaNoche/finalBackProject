@@ -99,8 +99,7 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
 });
 
 //Get one event by _id with data calculated and populate data owner event.
-router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
-
+router.get('/event/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const eventId = req.params._id;
     const latitude='';
@@ -115,6 +114,7 @@ router.get('/one/:_id',jwtAuthOptional, async function (req, res, next) {
     next(error)
   }
 })
+
 
 router.post('/', jwtAuth, upload,[
   body('title').not().isEmpty().trim().escape().withMessage('The title is required'),
