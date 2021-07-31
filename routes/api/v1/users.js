@@ -1,5 +1,5 @@
 'use strict'
-
+const i18n = require('../../../lib/i18nConfigure')
 var express = require('express');
 var router = express.Router();
 const jwtAuth = require('../../../lib/jwtAuth');
@@ -18,6 +18,7 @@ const User = require('../../../models/User');
 const Event = require('../../../models/Event')
 const { route } = require('./event');
 const { response } = require('express');
+const { language } = require('googleapis/build/src/apis/language');
 
 const passwordSchema = new pv();
 passwordSchema
@@ -55,7 +56,11 @@ const upload = multer({
 
 //recover Password
 router.post('/recoverpass', 
-        [body('email').isEmail().escape().withMessage('Data, incorrect format')] ,async(req,res,next) => {
+        [body('email').isEmail().escape().withMessage(
+            (value, { req, location, path }) => {
+                return req.__('Data, incorrect format', { value, location, path });
+              })
+        ] ,async(req,res,next) => {
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -89,13 +94,17 @@ router.post('/recoverpass',
 router.get('/:id_user?', jwtAuth, async function(req,res,next){
     try {
         const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
-        
+        i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
+
         if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
             const resultUserId = await User.getUser(idUser)
             const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,location} = resultUserId;
             return res.status(200).json({result: {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,location}});
         }  else{
-            const err = new Error(`The user does not have privileges for this action`);
+            
+            const err = new Error(
+                i18n.__('The user does not have privileges for this action')
+            );
             err.status = 403
             throw err
         }  
@@ -109,6 +118,8 @@ router.get('/:id_user?', jwtAuth, async function(req,res,next){
 router.delete('/:id_user?', jwtAuth, async function(req,res,next){
     try {
         const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
+        i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
+
         if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
             const delFavoriteEvents = await Event.del_id_favorites(idUser);
             const delAssistants = await Event.del_id_assistants(idUser);
@@ -123,9 +134,9 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
             
             const deleteUser = await User.deleteUser(idUser);
 
-            return res.status(200).json({result: `Successful deletion: ${idUser}`});     
+            return res.status(200).json({result: `${i18n.__('Successful deletion: ')} ${idUser}`});     
         }else{
-            const err = new Error(`The user does not have privileges for this action`);
+            const err = new Error(i18n.__('The user does not have privileges for this action'));
             err.status = 403
             throw err
         }
@@ -144,12 +155,36 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
 
  router.put('/:id_user?', jwtAuth, upload,
  [
-     body('username').optional().isLength({ min: 6 }).escape().withMessage('The username min 6 characters'),
-     body('email').optional().isEmail().escape().withMessage('Email, incorrect format'),
-     body('role').optional().isNumeric().withMessage('The role must be numeric'),
-     body('nickname').optional().not().isEmpty().trim().escape().withMessage('The nickname is required'),
-     body('latitude').optional().isNumeric().withMessage('The latitude must be numeric'),
-     body('longitude').optional().isNumeric().withMessage('The longitude must be numeric'),
+     body('username').optional().isLength({ min: 6 }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The username min 6 characters', { value, location, path });
+          }
+         ),
+     body('email').optional().isEmail().escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Email, incorrect format', { value, location, path });
+          }
+         ),
+     body('role').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The role must be numeric', { value, location, path });
+          }
+          ),
+     body('nickname').optional().not().isEmpty().trim().escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The nickname is required', { value, location, path });
+          }
+          ),
+     body('latitude').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The latitude must be numeric', { value, location, path });
+          }
+          ),
+     body('longitude').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The longitude must be numeric', { value, location, path });
+          }
+          ),
      body('password').optional().custom(password => {   
 /**
 * Validate password, minimum requirements.
@@ -196,6 +231,7 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
 async (req, res, next) =>{
  try {
     const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
+    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
     if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
         req.body.idActiveUser = idUser;
         const errors = validationResult(req);
@@ -212,7 +248,7 @@ async (req, res, next) =>{
         res.status(201).json({result:{_id,username,nickname,email}});
         
     }else{
-        const err = new Error(`The user does not have privileges for this action`);
+        const err = new Error(i18n.__('The user does not have privileges for this action'));
         err.status = 403
         throw err
     }
