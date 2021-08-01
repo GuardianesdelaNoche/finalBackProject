@@ -37,7 +37,7 @@ router.get('/', async function (req, res, next) {
     const filters = { date: { '$gte': new Date(Date.now())}}
     
     if (req.query.title) {
-      filters.title = new RegExp('^' + req.query.title, 'i')
+      filters.title = new RegExp(req.query.title, 'i')
     }
     if (req.query.indoor) {
       filters.indoor = req.query.indoor
