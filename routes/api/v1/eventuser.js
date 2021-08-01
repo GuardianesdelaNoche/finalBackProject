@@ -22,7 +22,7 @@ router.get('/ownevent',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events: result })
+    res.json({ total:count ? count.count : count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
@@ -30,6 +30,7 @@ router.get('/ownevent',jwtAuth, async function(req, res, next) {
 });
 
 /* GET favorite events */
+
 router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
   try {
     
@@ -49,7 +50,7 @@ router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events: result })
+    res.json({ total:count ? count.count : count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
@@ -78,7 +79,7 @@ router.get('/assistant',jwtAuth, async function(req, res, next) {
     const {total,result} = resultEnd;
     const count = total.length?total[0]:0;
 
-    res.json({ total:count, events: result })
+    res.json({ total:count ? count.count : count, events: result })
   } catch (error) {
     const errorModify = error.toString().split(':')[1].trim();
     return res.status(500).json({ message: errorModify });
