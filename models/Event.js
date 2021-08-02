@@ -41,7 +41,6 @@ eventSchema.statics.createRecord = function (nuevo, cb) {
   }
   
 eventSchema.statics.list = async function (filters, startRow, numRows, sortField, authenticate,latitude,longitude,distance,cb) {
-
   const result = {}
   const aggregteAll = eventsAll(filters, startRow, numRows, sortField, authenticate,latitude,longitude,distance)
   const query = Event.aggregate(aggregteAll)

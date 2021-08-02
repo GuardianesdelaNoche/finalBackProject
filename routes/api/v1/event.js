@@ -29,7 +29,7 @@ const upload = multer({
 }).single('photo')
 
 /* GET events . */
-router.get('/', async function (req, res, next) {
+router.get('/',jwtAuthOptional, async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit) || 1000
@@ -62,7 +62,7 @@ router.get('/', async function (req, res, next) {
         filters.price = req.query.price
       }
     }
-  
+    
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
 
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
@@ -138,7 +138,7 @@ router.post('/', jwtAuth, upload,[
     const latitude = req.body.latitude ? req.body.latitude :200
     const longitude = req.body.longitude ? req.body.longitude : 200
     const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
-    const namePhoto = req.file ? req.file.filename :'';
+    const namePhoto = req.file ? req.file.filename :'dei.png';
   
     
     const errors = validationResult(req);
