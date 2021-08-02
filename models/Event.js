@@ -57,6 +57,13 @@ eventSchema.statics.listOne = function (authenticate,eventId,latitude,longitude)
   return query;
 }
 
+//Event exists
+eventSchema.statics.existsOne = function (eventId) {
+  const query = Event.countDocuments({_id:eventId}).exec();
+  
+  
+  return query;
+}
 
 //Search own events with paginate
 eventSchema.statics.findOwnEventsPaginate = async function(req){
@@ -181,6 +188,16 @@ eventSchema.statics.del_id_assistants = function(idUser){
   ).exec()
       return deleteAllAssistants
 };
+
+
+//Exists idUser in favorite?
+eventSchema.statics.existsIdUserFavorite = function(idUser, idEvent){
+  const id = new mongoose.Types.ObjectId(idUser);
+  const idEv = mongoose.Types.ObjectId(idEvent);
+  const favorites = Event.countDocuments({_id: idEv, _id_favorite: id}).exec()
+  return favorites
+};
+
 
   
 const Event = mongoose.model('Event', eventSchema);

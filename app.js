@@ -43,6 +43,7 @@ app.use('/api/v1/user/register', require('./routes/api/v1/register'));
 app.use('/api/v1/events', require('./routes/api/v1/event'));
 app.use('/api/v1/tags', require('./routes/api/v1/tag'));
 app.use('/api/v1/eventsuser', require('./routes/api/v1/eventuser'));
+app.use('/api/v1/eventsignup', require('./routes/api/v1/eventsignup'))
 
 
 app.use('/api/v1/users', require('./routes/api/v1/users'));
