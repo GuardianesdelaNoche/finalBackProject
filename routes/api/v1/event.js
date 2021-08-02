@@ -29,7 +29,7 @@ const upload = multer({
 }).single('photo')
 
 /* GET events . */
-router.get('/', async function (req, res, next) {
+router.get('/',jwtAuthOptional, async function (req, res, next) {
   try {
     const skip = parseInt(req.query.skip) || 0
     const limit = parseInt(req.query.limit) || 1000
@@ -62,7 +62,7 @@ router.get('/', async function (req, res, next) {
         filters.price = req.query.price
       }
     }
-  
+    
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
 
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
