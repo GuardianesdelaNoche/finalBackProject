@@ -1,4 +1,16 @@
 {
 	"Data, incorrect format": "Los datos introducidos tienen un formato incorrecto",
-	"The user does not have privileges for this action": "El usuario no tiene privilegios para esta acción"
+	"The user does not have privileges for this action": "El usuario no tiene privilegios para esta acción",
+	"Only images are allowed: .png|.jpg|.gif|.jpeg": "Sólo están permitidas las imágenes de tipo: .png|.jpg|.gif|.jpeg",
+	"User not exists": "El usuario no existe",
+	"Successful deletion: ": "Borrado correctamente: ",
+	"The username min 6 characters": "El username debe tener mínimo 6 carácteres",
+	"Email, incorrect format": "Formato de correo incorrecto",
+	"The role must be numeric": "El rol debe ser numérico",
+	"The nickname is required": "El nickname es obligatorio",
+	"The latitude must be numeric": "La latitude debe ser numérico. Separador de decimales .",
+	"The longitude must be numeric": "La longitude debe ser numérica. Separador de decimales .",
+	"E-mail already exists": "E-mail duplicado",
+	"Username, already exists": "Username, duplicado",
+	"Nickname, already exists": "Nickname, duplicado"
 }
