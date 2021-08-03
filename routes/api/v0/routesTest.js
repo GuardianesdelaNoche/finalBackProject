@@ -202,4 +202,19 @@ try {
 }
 })
 
+router.get ('/availablePlaces', async function(req,res,next){
+
+    try {
+        //req.sort = 'asc' or 'desc'
+        req.id= '60f897bd0656ee212af552b6'
+        //req.id= '60f49f376eb9eb0f543c3f94'
+        
+        const resultado = await Event.availablePlaces(req.id);
+        
+        res.status(201).json({result: resultado})
+    } catch (error) {
+        next(error)
+    }
+});
+
 module.exports = router;
