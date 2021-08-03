@@ -57,6 +57,13 @@ eventSchema.statics.listOne = function (authenticate,eventId,latitude,longitude)
   return query;
 }
 
+//Event exists
+eventSchema.statics.existsOne = function (eventId) {
+  const query = Event.countDocuments({_id:eventId}).exec();
+  
+  
+  return query;
+}
 
 //Search own events with paginate
 eventSchema.statics.findOwnEventsPaginate = async function(req){
@@ -103,7 +110,7 @@ eventSchema.statics.findAssistantsEventsPaginate = async function(req){
 
 
 //Add new User _id in _id_assistants
-eventSchema.statics.add_id_assistants = function(idUser,idEvent){
+eventSchema.statics.add_id_assistant = function(idUser,idEvent){
     const updateAssistants =  Event.findByIdAndUpdate(
         {_id: new mongoose.Types.ObjectId(idEvent) },
         {$addToSet: {_id_assistants: new mongoose.Types.ObjectId(idUser)} },
@@ -113,7 +120,7 @@ eventSchema.statics.add_id_assistants = function(idUser,idEvent){
 };
 
 ////Delete User _id in _id_assistants
-eventSchema.statics.del_id_assistants = function(idUser,idEvent){
+eventSchema.statics.del_id_assistant = function(idUser,idEvent){
     const deleteAssistants =  Event.findByIdAndUpdate(
         {_id: new mongoose.Types.ObjectId(idEvent) },
         {$pull: {_id_assistants: new mongoose.Types.ObjectId(idUser) } },
@@ -180,6 +187,32 @@ eventSchema.statics.del_id_assistants = function(idUser){
       {new: true}
   ).exec()
       return deleteAllAssistants
+};
+
+
+//Exists idUser in favorite?
+eventSchema.statics.existsIdUserFavorite = function(idUser, idEvent){
+  const id = new mongoose.Types.ObjectId(idUser);
+  const idEv = mongoose.Types.ObjectId(idEvent);
+  const favorites = Event.countDocuments({_id: idEv, _id_favorite: id}).exec()
+  return favorites
+};
+
+//Exists idUser in favorite?
+eventSchema.statics.existsIdUserAssistant = function(idUser, idEvent){
+  const id = new mongoose.Types.ObjectId(idUser);
+  const idEv = mongoose.Types.ObjectId(idEvent);
+  const assistant = Event.countDocuments({_id: idEv, _id_assistants: id}).exec()
+  return assistant
+};
+
+//Available Places
+//available_places: {$subtract:['$max_places',{$size: '$_id_assistants'}]},
+eventSchema.statics.availablePlaces = async function(idEvent){
+  const idEv =  mongoose.Types.ObjectId(idEvent);
+  const assistant = await Event.findById(idEv)
+  const available =  assistant.max_places - assistant._id_assistants.length
+  return available
 };
 
   

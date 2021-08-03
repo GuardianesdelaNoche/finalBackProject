@@ -47,7 +47,7 @@ const upload = multer({
     fileFilter: (req,file,cb) =>{
         const ext = path.extname(file.originalname).toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-            return cb(new Error('Only images are allowed: .png|.jpg|.gif|.jpeg'))
+            return cb(new Error(i18n.__('Only images are allowed: .png|.jpg|.gif|.jpeg')))
         }
         cb(null, true)
     },
@@ -71,7 +71,7 @@ router.post('/recoverpass',
        //Validate id e-mail exixsts
         const userEx = await User.getUserEmail(req.body.email)
     if (!userEx){
-        throw new Error(`User not exists`)
+        throw new Error(i18n.__("User not exists"))
     } 
     const recoverToken = await recoverPassController(req.body.email);
     if (recoverToken){
@@ -116,6 +116,7 @@ router.get('/:id_user?', jwtAuth, async function(req,res,next){
 
 //Delete user
 router.delete('/:id_user?', jwtAuth, async function(req,res,next){
+    
     try {
         const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
         i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
@@ -200,31 +201,44 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
         const resultEI = await expresValidateEmail(req);
         
          if (resultEI.resultE>0 && resultEI.resultE_Id===0){
-             throw new Error(`Email already exists: ${email}`);
+             throw new Error(i18n.__('E-mail already exists'));
          } else {
              return true
          }
-     }).escape().withMessage('E-mail already exists'),
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('E-mail already exists', { value, location, path });
+          }
+        ),
      
      body('username').optional().custom(async (username,{req})=>{
         const resultUI = await expressValidateUsername(req)
 
          if (resultUI.resultU >0 && resultUI.resultU_Id===0){
-             throw new Error(`Username already exists: ${username}`);
+             throw new Error(i18n.__('Username, already exists'));
          } else {
              return true
          }
-     }).escape().withMessage('Username, already exists'),
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Username, already exists', { value, location, path });
+          }
+        ),
      
      body('nickname').optional().custom(async (nickname, {req})=>{
          const resultNI = await expressValidateNickname(req)
 
          if (resultNI.resultN >0 && resultNI.resultN_Id===0){
-             throw new Error(`Nickname already exists: ${nickname}`);
+             throw new Error(i18n.__('Nickname, already exists'));
          } else {
              return true
          }
-     }).escape().withMessage('Nickname, already exists'),
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Nickname, already exists', { value, location, path });
+          }
+        ),
+        
 
      
  ], 
