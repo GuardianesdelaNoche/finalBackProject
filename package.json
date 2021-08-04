@@ -6,7 +6,8 @@
     "start": "node ./bin/www",
     "loadUsers": "node ./lib/loadUsers.js",
     "dev": "cross-env PORT=3000 NODE_ENV=development DEBUG=nodeapi:* nodemon",
-    "actionDB": "node ./scriptDatabase/actionDB.js"
+    "actionDB": "node ./scriptDatabase/actionDB.js",
+    "swagger-autogen": "node swagger.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -29,6 +30,7 @@
     "nodemailer": "^6.6.2",
     "nodemon": "^2.0.9",
     "password-validator": "^5.1.1",
+    "swagger-autogen": "^2.11.1",
     "swagger-ui-express": "^4.1.6",
     "yamljs": "^0.3.0"
   }
