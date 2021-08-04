@@ -16,8 +16,11 @@ var app = express();
 app.use(cors());
 
 const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yaml');
+//const YAML = require('yamljs');
+//const swaggerDocument = YAML.load('./swagger.yaml');
+
+const swaggerFile = require('./swagger_output.json')
+
 
 require('./lib/connectMongoose');
 
@@ -47,7 +50,7 @@ app.use('/api/v1/eventsignup', require('./routes/api/v1/eventsignup'))
 
 
 app.use('/api/v1/users', require('./routes/api/v1/users'));
-app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
+//app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
 //app.use('/', indexRouter);
 //app.use('/users', usersRouter);
 
@@ -55,8 +58,9 @@ app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
  * Swagger 
  */
 
- app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+ app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
+ //app.use('/api-doc-v2', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
