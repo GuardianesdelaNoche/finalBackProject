@@ -12,5 +12,16 @@
 	"The longitude must be numeric": "La longitude debe ser numérica. Separador de decimales .",
 	"E-mail already exists": "E-mail duplicado",
 	"Username, already exists": "Username, duplicado",
-	"Nickname, already exists": "Nickname, duplicado"
+	"Nickname, already exists": "Nickname, duplicado",
+	"The title is required":"El título del evento es obligatorio",
+	"The price is required": "El precio del evento es obligatorio",
+	"The price must be numeric and values between 0 & 999":"El precio ha de ser numérico y los valores entre 0 & 999",
+	"The indoor is required and must be boolean": "El tipo de evento(indoor) es obligatorio y su valor debe ser un booleano",
+	"The max_places must be numeric": "El máximo de plazas disponibles para cada evento debe ser numérico",
+	"The date is required": "La fecha del evento es obligatoria",
+	"The duration is required": "La duración del evento es obligatoria",
+	"The duration must be numeric between 0.1 & 999.99": "La duración del evento debe ser numérica y sus valores entre 0.1 & 999.99",
+	"The tag is required": "El Tag es obligatorio",
+	"The tag is string required" : "El Tab debe ser un string"
+	
 }

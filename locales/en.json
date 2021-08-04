@@ -12,8 +12,16 @@
 	"The longitude must be numeric": "The longitude must be numeric",
 	"E-mail already exists": "E-mail already exists",
 	"Username, already exists": "Username, already exists",
-	"Nickname, already exists": "Nickname, already exists"
-
-
+	"Nickname, already exists": "Nickname, already exists",
+	"The title is required":"The title is required",
+	"The price is required": "The price is required",
+	"The price must be numeric and values between 0 & 999":"The price must be numeric and values between 0 & 999",
+	"The indoor is required and must be boolean": "The indoor is required and must be boolean",
+	"The max_places must be numeric": "The max_places must be numeric",
+	"The date is required": "The date is required",
+	"The duration is required": "The duration is required",
+	"The duration must be numeric between 0.1 & 999.99": "The duration must be numeric between 0.1 & 999.99",
+	"The tag is required": "The tag is required",
+	"The tag is string required" : "The tag is string required"
 
 }
