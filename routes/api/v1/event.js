@@ -240,8 +240,8 @@ router.put('/:_id', jwtAuth, upload,[
       return res.status(500).json({message: "The price cannot be higher than 999 "})
     }
 
-    if (duration <= 5) {
-      return res.status(500).json({message: "The price cannot be lower than or equal 5"})
+    if (duration <= 0) {
+      return res.status(500).json({message: "The price cannot be lower than or equal 0.1"})
     }
 
     if (duration >= 99) {
