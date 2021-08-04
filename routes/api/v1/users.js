@@ -59,7 +59,8 @@ router.post('/recoverpass',
         [body('email').isEmail().escape().withMessage(
             (value, { req, location, path }) => {
                 return req.__('Data, incorrect format', { value, location, path });
-              })
+              }
+        )
         ] ,async(req,res,next) => {
     
     const errors = validationResult(req);

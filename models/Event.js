@@ -13,8 +13,8 @@ const eventsOne = require('../lib/eventsOne');
 const eventSchema = mongoose.Schema({
     title: {type: String, index: true, required: true},
     description: {type:String, index: true},
-    price: {type:Number, index: true, required: true},
-    max_places: {type:Number, index: true},
+    price: {type:Number, index: true, default: 0},
+    max_places: {type:Number, index: true, default:0},
     date: {type: Date, index: true, required: true},
     duration: { type: Number, index: true, required: true},
     photo: {type:String, index: true},
