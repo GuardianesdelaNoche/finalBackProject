@@ -68,7 +68,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
     const resultEnd = rows[0];
     const {total,result} = resultEnd;
-    const {count} = total[0]
+    const count = total.length>0?total[0].count:0;
     res.json({ total:count, events: result })
 
   } catch (error) { 
