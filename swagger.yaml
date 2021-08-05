@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 4Events API
-  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  description: "<p>This is an API belonging to the 4events group that is dedicated to putting people who organize directed activities in contact with people who are looking for someone to organize them.</p><p>Here you will find everything you are looking for and you can offer any activity that you want to organize</p>"
   version: 0.1.9
 servers:
   - url: https://services.4events.net
@@ -24,20 +24,6 @@ paths:
                   type: string        
       tags:
         - Login
-      # parameters:
-      # - in: body
-      #   name: body
-      #   description: Username 
-      #   required: true
-      #   schema:
-      #     type: string
-      #     items:
-      #   description: User name
-      # - name: password
-      #   in: body
-      #   schema:
-      #     type: string
-      #   description: User password
     
       responses:
         '201':    # status code
@@ -49,7 +35,83 @@ paths:
                 items: 
                   type: string
         '401':    
-          description: No coment
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entinty
+
+  /api/v1/user/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              required:
+                - username
+                - email
+                - role
+                - nickname
+                - password
+              properties:
+                username:
+                  type: string
+                  minimum: 6
+                  description: Username with minimum 6 characters
+                email:
+                  type: string
+                  format: email
+                  description: Valid User e-mail
+                role:
+                  type: number
+                  minimum: 1
+                  maximum: 1
+                  default: 1
+                  description: role default 1. Only a super-administrator assign another role
+                nickname:
+                  type: string
+                  description: The nickName of user
+                password:
+                  type: string
+                  format: password
+                  minimum: 8
+                  maximum: 20
+                  description: The password require min. 1 uppercase 1 lowercase and 1 digit min 8 max 20 characters
+                image:
+                  type: string
+                  format: binary
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                phone:
+                  type: string
+                latitude: 
+                  type: number
+                  minimum: -90.0
+                  maximum: 90.0
+                longitude: 
+                  type: number
+                  minimum: -180.0
+                  maximum: 180.0
+      tags:
+        - User Register 
+
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
 
   /api/v1/users:
     get:
@@ -66,13 +128,14 @@ paths:
         name: x-access-token
         schema:
           type: string
-          format: uuid   
+          format: uuid
+        required: true 
        
       tags:
-        - Get User
+        - Control Users
     
       responses:
-        '201':    # status code
+        '200':    # status code
           description: A JSON object with data
           content:
             application/json:
@@ -80,8 +143,8 @@ paths:
                 $ref: '#/components/schemas/getUser'
         '403':    
           description: The user does not have privileges for this action
-        '404':
-          description: bb
+        '422':
+          description: Unprocessable Entinty
 
   # /api/products:
   #   get:
@@ -280,10 +343,12 @@ components:
       properties:
         _id:
           type: string
+          format: uuid
         username:
           type: string
         email:
           type: string
+          format: email
         address:
           type: string
         city:
@@ -343,3 +408,17 @@ components:
             coordinates:
               $ref: '#/components/schemas/Point2D'
 
+    RegisterUser:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            username:
+              type: string
+            nickname:
+              type: string
+            
