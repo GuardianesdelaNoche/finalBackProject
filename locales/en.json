@@ -22,6 +22,7 @@
 	"The duration is required": "The duration is required",
 	"The duration must be numeric between 0.1 & 999.99": "The duration must be numeric between 0.1 & 999.99",
 	"The tag is required": "The tag is required",
-	"The tag is string required" : "The tag is string required"
+	"The tag is string required" : "The tag is string required",
+	"The date must be higher than now": "The date must be higher than now"
 
 }

@@ -22,6 +22,7 @@
 	"The duration is required": "La duración del evento es obligatoria",
 	"The duration must be numeric between 0.1 & 999.99": "La duración del evento debe ser numérica y sus valores entre 0.1 & 999.99",
 	"The tag is required": "El Tag es obligatorio",
-	"The tag is string required" : "El Tab debe ser un string"
+	"The tag is string required" : "El Tab debe ser un string",
+	"The date must be higher than now": "La fecha del evento debe ser mayor al momento actual"
 	
 }

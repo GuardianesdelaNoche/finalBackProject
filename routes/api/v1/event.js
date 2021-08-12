@@ -39,12 +39,24 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     if (req.query.title) {
       filters.title = new RegExp(req.query.title, 'i')
     }
-    if (req.query.indoor) {
-      filters.indoor = req.query.indoor
+    if (req.query.description) {
+      filters.description = new RegExp(req.query.description, 'i')
     }
 
+    if (req.query.indoor) {
+      const myBool = (req.query.indoor.toLowerCase() === 'true');
+      filters.indoor = myBool
+      
+    }
+    
     if (req.query.tags) {
-      filters.tags = req.query.tags;
+      let tagsArr;
+      if (!Array.isArray(req.query.tags)){
+          tagsArr = req.query.tags.split(',')
+      } else {
+          tagsArr = req.query.tags;
+      }
+      filters.tags = {$in: tagsArr};
     }
 
     if (typeof req.query.price !== 'undefined' && req.query.price !== '-') {
@@ -52,19 +64,18 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
         filters.price = {}
         let range = req.query.price.split('-')
         if (range[0] !== '') {
-          filters.price.$gte = range[0]
+          filters.price.$gte = Number(range[0])
         }
   
         if (range[1] !== '') {
-          filters.price.$lte = range[1]
+          filters.price.$lte = Number(range[1])
         }
       } else {
-        filters.price = req.query.price
+        filters.price = Number(req.query.price)
       }
     }
     
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
     const resultEnd = rows[0];
     const {total,result} = resultEnd;
@@ -157,6 +168,27 @@ router.post('/', jwtAuth, upload,[
       return req.__('The tag is required', { value, location, path });
     }
     ),
+  body('date').optional().custom((date)=>{
+    //const resultEI = await expresValidateEmail(req);
+    
+      // 
+      return true
+  }).escape().withMessage(
+    (value, { req, location, path }) => {
+        return req.__('the date must be higher than now', { value, location, path });
+      }
+    ),
+    //TODO
+//   body('tags').custom(tags => {   
+//     //Validamos si los tags que nos pasan están dentro de los permitidos
+//     const errorTags = Event.allowedTagsEnumValidate(tags)
+
+//     //Si alguno de los tags no se encuentra, lanzaremos un error indicando que tags no son admitidos
+//     if (errorTags.length > 0){
+//         throw new Error(`Tags no admitidos: ${errorTags}`);
+//     } else {
+//         return true}
+// })
     
 ], async (req, res, next) => {
 
