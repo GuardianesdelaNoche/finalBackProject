@@ -117,7 +117,7 @@ paths:
     get:
       security:
         - bearerAuth: []
-      summary: Returns the user decrypting the token.
+      summary: Returns the user by decrypting the token or by Id.
       parameters:
       - in: path
         name: _id 
@@ -145,7 +145,85 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
+    put:
+      security:
+        - bearerAuth: []
+      summary: Modify data user by decrypting the token or by Id.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              properties:
+                username:
+                  type: string
+                  minimum: 6
+                  description: Username with minimum 6 characters
+                email:
+                  type: string
+                  format: email
+                  description: Valid User e-mail
+                role:
+                  type: number
+                  minimum: 1
+                  maximum: 1
+                  default: 1
+                  description: role default 1. Only a super-administrator assign another role
+                nickname:
+                  type: string
+                  description: The nickName of user
+                password:
+                  type: string
+                  format: password
+                  minimum: 8
+                  maximum: 20
+                  description: The password require min. 1 uppercase 1 lowercase and 1 digit min 8 max 20 characters
+                image:
+                  type: string
+                  format: binary
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                phone:
+                  type: string
+                latitude: 
+                  type: number
+                  minimum: -90.0
+                  maximum: 90.0
+                longitude: 
+                  type: number
+                  minimum: -180.0
+                  maximum: 180.0
+                  
 
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+            
+           
+
+      tags: 
+        - Control Users
+      
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+      
   # /api/products:
   #   get:
   #     summary: Returns a list of products.
