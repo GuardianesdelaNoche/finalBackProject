@@ -102,7 +102,8 @@ router.post('/', upload,
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array()});
+            //return res.status(422).json({ errors: errors.array()});
+            return res.status(422).json({ error: errors.array()[0].msg});
         }
         const namePhoto = req.file ? req.file.filename :''
         const latitude = req.body.latitude ? req.body.latitude : 200

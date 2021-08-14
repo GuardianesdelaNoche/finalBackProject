@@ -56,7 +56,8 @@ async (req, res, next) =>{
             //req.body.idActiveUser = idUser;
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(422).json({ errors: errors.array()});
+                //return res.status(422).json({ errors: errors.array()});
+                return res.status(422).json({ error: errors.array()[0].msg});
             }
 
             //Insert a new id_user in favorite event
@@ -112,7 +113,8 @@ async (req, res, next) =>{
             //req.body.idActiveUser = idUser;
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(422).json({ errors: errors.array()});
+                //return res.status(422).json({ errors: errors.array()});
+                return res.status(422).json({ error: errors.array()[0].msg});
             }
 
             //Insert a new id_user in favorite event
@@ -179,7 +181,8 @@ async (req, res, next) =>{
             //req.body.idActiveUser = idUser;
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(422).json({ errors: errors.array()});
+                // return res.status(422).json({ errors: errors.array()});
+                return res.status(422).json({ error: errors.array()[0].msg});
             }
 
             //Insert a new id_user in assistants event
@@ -246,7 +249,8 @@ async (req, res, next) =>{
             //req.body.idActiveUser = idUser;
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(422).json({ errors: errors.array()});
+                //return res.status(422).json({ errors: errors.array()});
+                return res.status(422).json({ error: errors.array()[0].msg});
             }
 
             //Delete id_user in assistants event

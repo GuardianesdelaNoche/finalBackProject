@@ -24,8 +24,9 @@ router.get('/ownevent',jwtAuth, async function(req, res, next) {
 
     res.json({ total:count, events: result })
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 });
 
@@ -52,8 +53,9 @@ router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
 
     res.json({ total:count, events: result })
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 });
 
@@ -81,8 +83,9 @@ router.get('/assistant',jwtAuth, async function(req, res, next) {
 
     res.json({ total:count , events: result })
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 });
 

@@ -83,8 +83,9 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     res.json({ total:count, events: result })
 
   } catch (error) { 
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 })
 
@@ -104,8 +105,9 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
     }
 
   } catch (error) { 
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 });
 
@@ -169,7 +171,7 @@ router.post('/', jwtAuth, upload,[
     }
     ),
   body('date').optional().custom((date)=>{
-    //const resultEI = await expresValidateEmail(req);
+    //const resultEI = await expresValidate(req);
     
       // 
       return true
@@ -206,7 +208,8 @@ router.post('/', jwtAuth, upload,[
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array()});
+        // return res.status(422).json({ errors: errors.array()});
+        return res.status(422).json({ error: errors.array()[0].msg});
     }
     
     const event = new Event({title, description, price, max_places, date, duration, indoor,address, city, postal_code, country,tags, 
@@ -222,8 +225,9 @@ router.post('/', jwtAuth, upload,[
    
     res.status(201).json({ result: event});    
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: error.errors ? error._message : errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: error.errors ? error._message : errorModify });
+    next(error)
   }
 
 
@@ -243,11 +247,13 @@ router.delete('/:_id', jwtAuth, async (req, res, next) => {
     }
 
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 
 });
+
 
 router.put('/:_id', jwtAuth, upload,[
   body('title').optional().not().isEmpty().trim().escape().withMessage(
@@ -270,11 +276,11 @@ router.put('/:_id', jwtAuth, upload,[
       return req.__('The max_places must be numeric', { value, location, path });
     }
     ),
-    body('date').optional().not().isEmpty().escape().withMessage(
-      (value, { req, location, path }) => {
-        return req.__('The date is required', { value, location, path });
-      }
-      ),
+  body('date').optional().not().isEmpty().escape().withMessage(
+    (value, { req, location, path }) => {
+      return req.__('The date is required', { value, location, path });
+    }
+    ),
   body('duration').optional().isNumeric().isFloat({ min: 0.1, max: 999.99 }).escape().withMessage(
     (value, { req, location, path }) => {
       return req.__('The duration must be numeric between 0.1 & 999.99', { value, location, path });
@@ -301,7 +307,8 @@ router.put('/:_id', jwtAuth, upload,[
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(422).json({errors: errors});
+        //return res.status(422).json({errors: errors});
+        return res.status(422).json({ error: errors.array()[0].msg});
     }
   
     const updatedEvent = await Event
@@ -318,8 +325,9 @@ router.put('/:_id', jwtAuth, upload,[
     res.status(200).json({ result: updatedEvent });
   
   } catch (error) {
-    const errorModify = error.toString().split(':')[1].trim();
-    return res.status(500).json({ message: errorModify });
+    // const errorModify = error.toString().split(':')[1].trim();
+    // return res.status(500).json({ message: errorModify });
+    next(error)
   }
 
 })

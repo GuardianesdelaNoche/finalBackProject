@@ -65,7 +65,8 @@ router.post('/recoverpass',
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array()});
+        // return res.status(422).json({ errors: errors.array()});
+        return res.status(422).json({ error: errors.array()[0].msg});
     }
 
     try {
@@ -251,7 +252,8 @@ async (req, res, next) =>{
         req.body.idActiveUser = idUser;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array()});
+            //return res.status(422).json({ errors: errors.array()});
+            return res.status(422).json({ error: errors.array()[0].msg});
         }
         const namePhoto = req.file ? req.file.filename :''
         const latitude = req.body.latitude ? req.body.latitude :200
@@ -260,7 +262,7 @@ async (req, res, next) =>{
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
         const {_id,username,nickname,email} = updateUser
-        res.status(201).json({result:{_id,username,nickname,email}});
+        res.status(201).json({result:{_id,username,nickname}});
         
     }else{
         const err = new Error(i18n.__('The user does not have privileges for this action'));

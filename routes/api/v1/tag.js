@@ -11,8 +11,9 @@ router.get('/', async function (req, res, next) {
       res.json({ tags: result });
   
     } catch (error) {
-        const errorModify = error.toString().split(':')[1].trim();
-        return res.status(500).json({ message: errorModify });
+        // const errorModify = error.toString().split(':')[1].trim();
+        // return res.status(500).json({ message: errorModify });
+        next(error)
     }
 })
 
