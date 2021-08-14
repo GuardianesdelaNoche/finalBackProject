@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
     city: {type: String, index: true},
     postal_code: {type: String, index: true},
     country: { type: String, index: true },
-    role: {type:Number, index: true,required: true},
+    role: {type:Number, index: true, default: 1},
     password: {type: String, required: true},
     phone: {type: String},
     nickname: {type: String, unique: true, index: true,required: true},
