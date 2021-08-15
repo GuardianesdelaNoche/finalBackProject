@@ -78,10 +78,15 @@ router.post('/recoverpass',
     const recoverToken = await recoverPassController(req.body.email);
     if (recoverToken){
         //Send  email
-      const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
+        const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
                 `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`)
                 
-        res.status(201).json({result:respuesta});
+        if (respuesta.accepted.length>0){
+            res.status(201).json({result:'OK'});
+        } else {
+            res.status(422).json({result:'KO'});
+        }
+        //res.status(201).json({result:respuesta});
     }
 
 
@@ -137,7 +142,12 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
             
             const deleteUser = await User.deleteUser(idUser);
 
-            return res.status(200).json({result: `${i18n.__('Successful deletion: ')} ${idUser}`});     
+            // return res.status(200).json({result: `${i18n.__('Successful deletion: ')} ${idUser}`});
+            //return res.status(200).json({result: deleteUser});
+
+            const {_id,username,nickname} = deleteUser
+            res.status(201).json({result:{_id,username,nickname}});
+            
         }else{
             const err = new Error(i18n.__('The user does not have privileges for this action'));
             err.status = 403

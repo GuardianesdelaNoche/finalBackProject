@@ -123,17 +123,15 @@ paths:
         name: _id 
         schema:
           type: string
+        required: true
         description: User id. Is optional. Only a super-administrator can modify a user other than himself
       - in: header
         name: x-access-token
         schema:
           type: string
-          format: uuid
-        required: true 
-       
+        
       tags:
         - Control Users
-    
       responses:
         '200':    # status code
           description: A JSON object with data
@@ -145,6 +143,7 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
+
     put:
       security:
         - bearerAuth: []
@@ -200,15 +199,12 @@ paths:
                   minimum: -180.0
                   maximum: 180.0
                   
-
       parameters:
         - in: header
           name: x-access-token
           schema:
             type: string
             
-           
-
       tags: 
         - Control Users
       
@@ -223,7 +219,290 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
+          
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete the user by decrypting the token or by Id.
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+        required: true
+        description: User id. Is optional. Only a super-administrator can modify a user other than himself
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+        required: true 
+      tags:
+        - Control Users
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+
+  /api/v1/users/recoverpass:
+    post:
+      summary: Recover password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string      
+      tags:
+        - Recover password
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - OK
+                      - KO
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+  
+  /api/v1/tags:
+    get:
+      summary: Returns the available tags.
+
+      tags:
+        - Get available tags
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/tags'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+
+  /api/v1/eventsuser/ownevent:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of events that the user owns
       
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+  /api/v1/eventsuser/assistant:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of assistant events
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          required: false 
+
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+  /api/v1/eventsuser/favoriteevent:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of favorite events
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          required: false 
+            
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+    
   # /api/products:
   #   get:
   #     summary: Returns a list of products.
@@ -499,4 +778,101 @@ components:
               type: string
             nickname:
               type: string
+
+    tags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              __v:
+                type: number
+
+    eventsAuth:
+      type: object
+      properties: 
+        total:
+          type: integer
+          description: Total events with filter and without paging 
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
+                type: string
+                format: uuid
+              tags:
+                type: array
+                items: 
+                  type: string
+              title:
+                type: string
+              description:
+                type: string
+              price:
+                type: number
+              max_places:
+                type: integer
+              date:
+                type: string
+                format: date-time
+              duration:
+                type: number
+              indoor:
+                type: boolean
+              location:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Point"
+              address:
+                type: string
+              city: 
+                type: string
+              postal_code:
+                type: string
+              country:
+                type: string
+              created_date:
+                type: string
+                format: date-time
+              detailsOwn:
+                type: object
+                properties:
+                  _id: 
+                    type: string
+                    format: uuid
+                  username: 
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  nickname: 
+                    type: string
+                  image:
+                    type: string
+                    format: uri
+              photo:
+                type: string
+                format: uri
+              assistants_count:
+                type: integer
+              favorite_events_count:
+                type: integer
+              available_places:
+                type: integer
+              isOwner:
+                type: boolean
+              isFavorite:
+                type: boolean
+              isAssistant:
+                type: boolean
+            
             

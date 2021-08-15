@@ -7,7 +7,7 @@ const Tag = require('../../../models/Tag');
 router.get('/', async function (req, res, next) {
     try {
       const result = await Tag.find();
-      
+    
       res.json({ tags: result });
   
     } catch (error) {
