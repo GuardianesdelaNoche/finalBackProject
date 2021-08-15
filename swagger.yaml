@@ -123,17 +123,15 @@ paths:
         name: _id 
         schema:
           type: string
+        required: true
         description: User id. Is optional. Only a super-administrator can modify a user other than himself
       - in: header
         name: x-access-token
         schema:
           type: string
-          format: uuid
         required: true 
-       
       tags:
         - Control Users
-    
       responses:
         '200':    # status code
           description: A JSON object with data
@@ -145,6 +143,7 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
+
     put:
       security:
         - bearerAuth: []
@@ -200,15 +199,12 @@ paths:
                   minimum: -180.0
                   maximum: 180.0
                   
-
       parameters:
         - in: header
           name: x-access-token
           schema:
             type: string
             
-           
-
       tags: 
         - Control Users
       
@@ -223,7 +219,70 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
-      
+          
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete the user by decrypting the token or by Id.
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+        required: true
+        description: User id. Is optional. Only a super-administrator can modify a user other than himself
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+        required: true 
+      tags:
+        - Control Users
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+
+  /api/v1/users/recoverpass:
+    post:
+      summary: Recover password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string      
+      tags:
+        - Recover password
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - OK
+                      - KO
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+
+
+    
   # /api/products:
   #   get:
   #     summary: Returns a list of products.
