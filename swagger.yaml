@@ -280,6 +280,24 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty
+  
+  /api/v1/tags:
+    get:
+      summary: Returns the available tags.
+
+      tags:
+        - Get available tags
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/tags'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
 
 
     
@@ -558,4 +576,20 @@ components:
               type: string
             nickname:
               type: string
+
+    tags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              __v:
+                type: number
             
