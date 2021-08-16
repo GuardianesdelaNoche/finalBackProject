@@ -737,7 +737,7 @@ paths:
           required: false
 
       tags:
-        - Get events
+        - GET PUT and DELETE events
 
       responses:
           '200':    # status code
@@ -751,191 +751,120 @@ paths:
           '422':
             description: Unprocessable Entinty
 
-
-  # /api/products:
-  #   get:
-  #     summary: Returns a list of products.
-  #     tags:
-  #       - Products
-  #     description: Returns a list of products, can be filtered by name, tag or price
-  #     parameters:
-  #     - name: skip   
-  #       in: query
-  #       schema:
-  #         type: integer
-  #       description: Number given to skip in order to paginate. By default 0, returns first page
-  #     - name: limit
-  #       in: query
-  #       schema:
-  #         type: integer
-  #       description: The number of products to return in order to paginate. By default 10      
-  #     - in: query
-  #       name: name  
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Filter by product name, it looks for a name that starts with the characters given example "Bic", you will get all products that starts with Bic
-  #     - in: query
-  #       name: tags
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Filter by product tag, example (tags=motor lifestyle) each tag must be separeted by commas ,
-  #     - in: query
-  #       name: min_price  
-  #       required: false
-  #       schema:
-  #         type: integer
-  #       description: Filter by product minimun price 
-  #     - in: query
-  #       name: max_price  
-  #       required: false
-  #       schema:
-  #         type: integer
-  #       description: Filter by product maximun price
-  #     - in: query
-  #       name: type  
-  #       required: false
-  #       schema:
-  #         type: string
-  #         enum:
-  #           - busqueda
-  #           - venta
-  #       description: Get the list with products on sale or products that people are looking for.
-  #     - in: query
-  #       name: sort  
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Set the order of the list, put field name to order by it example "sort=name". If you use - character you get the list in desc order example "sort=-name"
+    post:
+      security:
+        - bearerAuth: []
+      summary: Insert a new event. 
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              required:
+                - title
+                - price
+                - indoor
+                - date
+                - duration
+                - tags
+              properties:
+                title:
+                  type: string
+                  description: Title of event
+                description: 
+                  type: string
+                price: 
+                  type: number
+                max_places:
+                  type: integer
+                date:
+                  type: string
+                  format: date-time
+                  description: values of date YYYY/MM/DD HH:MI:SS
+                duration:
+                  type: integer
+                  description: duration value in minutes
+                photo:
+                  type: string
+                  format: binary
+                indoor:
+                  type: string
+                  enum:
+                    - 'true'
+                    - 'false'
       
-  #     responses:
-  #       '200':    # status code
-  #         description: A JSON array of user names
-  #         content:
-  #           application/json:
-  #             schema: 
-  #               type: array
-  #               items: 
-  #                 type: string
-  #       '400':    
-  #         description: `page`  + `num_productos_per_page` are required
+    
+   
+    
+    # location: {
+    #   type: {type: String},
+    #   coordinates: [Number]
+    # },
+    # address: {type: String, index: true },
+    # city: {type: String, index: true},
+    # postal_code: {type: String, index: true},
+    # country: { type: String, index: true },
+    # created_date: { type: Date, index: true, default: Date.now },
+    # tags: [String],
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string           
+      
+      tags:
+      - GET PUT and DELETE events
 
-  # /api/products/new:
-  #   post:
-  #     summary: Create a new product.
-  #     tags:
-  #       - Products
-  #     consumes:
-  #       - application/json
-  #     requestBody:
-  #       description: Product
-  #       required: true
-  #       content: 
-  #         application/json:
-  #           schema:
-  #             summary: An example of Product
-  #             type: object
-  #             required:
-  #               - name
-  #               - price
-  #               - sale
-  #               - picture
-  #             properties:
-  #               name:
-  #                 type: string
-  #               price:
-  #                 type: number
-  #               sale:
-  #                 type: boolean
-  #               picture:
-  #                 type: string
-  #               tags:
-  #                 type: array    
-  #                 items:
-  #                   type:string
-  #                 uniqueItems: true
-  #             example:
-  #               name: "Rain Boots"
-  #               price: 35
-  #               sale: false
-  #               picture: "./images/rain-boots.jpeg"
-  #               tags: ["lifestyle","fashion"]            
-  #     responses:
-  #       '201':    # status code
-  #         description: Product Created
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/eventsAuth'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+        
 
-  # /api/products/{id}/update:
-  #   put:
-  #     summary: Update the product given.
-  #     tags:
-  #       - Products
-  #     parameters:
-  #       - in: path
-  #         name: id
-  #         required: true
-  #         description: The product ID
-  #     requestBody:
-  #       description: Product to be updated, can be all the fields, two or one. Whatever it is wanted. Example {"name":"nueva Bici"} {"name:"nuevaBici", price:32}
-  #       required: true        
-  #       content:
-  #         application/json:
-  #           schema:
-  #             summary: An example of Product
-  #             type: object              
-  #             properties:
-  #               name:
-  #                 type: string
-  #               price:
-  #                 type: number
-  #               sale:
-  #                 type: boolean
-  #               picture:
-  #                 type: string
-  #               tags:
-  #                 type: array
-  #                 items:
-  #                   type: string
-  #                 uniqueItems: true
-  #             example:
-  #               name: "Nueva Bici"
-  #               price: 48
-  #               sale: false
-  #               picture: "./images/Bicicleta.jpeg"
-  #               tags: ["lifestyle", "motor"]
-  #     responses:
-  #       '200':    # status code
-  #         description: Product Updated
 
-  # /api/products/{id}/delete:
-  #   delete:
-  #     summary: Delete the product given.
-  #     tags:
-  #       - Products
-  #     parameters:
-  #       - in: path
-  #         name: id
-  #         required: true
-  #         description: The product ID
-  #     responses:
-  #       '200':    # status code
-  #         description: Product Deleted
+  /api/v1/events/event/:
+    get:
+      security:
+        - {}
+        - bearerAuth: []
+      summary: Only returns the event by _id.
+      
+      parameters:
+        - in: path
+          name: _id
+          schema:
+            type: string
+          required: true
+          description: Event Id.
 
-  # /api/tags:
-  #   get:
-  #     summary: Returns a list of tags.
-  #     tags:
-  #       - Tags
-  #     description: Returns a list of products tags
-  #     responses:
-  #       '200':    # status code
-  #         description: A JSON array of user names
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 type: string
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      
+      tags:
+        - Get event
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1125,5 +1054,81 @@ components:
                 type: boolean
               isAssistant:
                 type: boolean
-            
+    
+    eventAuth:
+      type: object
+      properties: 
+        event:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            tags:
+              type: array
+              items: 
+                type: string
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              type: number
+            max_places:
+              type: integer
+            date:
+              type: string
+              format: date-time
+            duration:
+              type: number
+            indoor:
+              type: boolean
+            location:
+              type: array
+              items:
+                $ref: "#/components/schemas/Point"
+            address:
+              type: string
+            city: 
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+            created_date:
+              type: string
+              format: date-time
+            detailsOwn:
+              type: object
+              properties:
+                _id: 
+                  type: string
+                  format: uuid
+                username: 
+                  type: string
+                  description: Show only if user is authenticated
+                email:
+                  type: string
+                  format: email
+                  description: Show only if user is authenticated
+                nickname: 
+                  type: string
+                image:
+                  type: string
+                  format: uri
+            photo:
+              type: string
+              format: uri
+            assistants_count:
+              type: integer
+            favorite_events_count:
+              type: integer
+            available_places:
+              type: integer
+            isOwner:
+              type: boolean
+            isFavorite:
+              type: boolean
+            isAssistant:
+              type: boolean
          

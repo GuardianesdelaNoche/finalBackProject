@@ -93,7 +93,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
 })
 
 
-//Get one event by _id with basic data
+//Get one event by _id with basic data +++++++++ Not documented +++++++++++
 router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const _id = req.params._id;
@@ -325,7 +325,7 @@ router.put('/:_id', jwtAuth, upload,[
       return;
     }
   
-    res.status(200).json({ result: updatedEvent });
+    res.status(201).json({ result: updatedEvent });
   
   } catch (error) {
     // const errorModify = error.toString().split(':')[1].trim();
