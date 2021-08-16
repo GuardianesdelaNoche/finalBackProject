@@ -246,7 +246,9 @@ router.delete('/:_id', jwtAuth, async (req, res, next) => {
       res.status(404).json({ error: 'not found' })
       return;
     } {
-      res.status(200).json(`${deletedEvent._id} deleted`);
+      const {_id} = deletedEvent
+      res.status(201).json({result:_id});
+      //res.status(201).json(`${deletedEvent._id} deleted`);
     }
 
   } catch (error) {
@@ -298,7 +300,7 @@ router.put('/:_id', jwtAuth, upload,[
 
   try {
     const { _id } = req.params;
-    const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
+    //const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
     i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
     const description = req.body.description ? req.body.description : '';
     const max_places = req.body.max_places ? req.body.max_places : 0;

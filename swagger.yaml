@@ -229,6 +229,7 @@ paths:
         name: _id 
         schema:
           type: string
+          format: uuid
         required: true
         description: User id. Is optional. Only a super-administrator can modify a user other than himself
       - in: header
@@ -792,20 +793,22 @@ paths:
                   enum:
                     - 'true'
                     - 'false'
-      
-    
-   
-    
-    # location: {
-    #   type: {type: String},
-    #   coordinates: [Number]
-    # },
-    # address: {type: String, index: true },
-    # city: {type: String, index: true},
-    # postal_code: {type: String, index: true},
-    # country: { type: String, index: true },
-    # created_date: { type: Date, index: true, default: Date.now },
-    # tags: [String],
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
       parameters:
         - in: header
           name: x-access-token
@@ -826,8 +829,129 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty  
-        
+    put:
+      security:
+        - bearerAuth: []
+      summary: Modify an event by _id.
+      
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: event _id
+      
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of event
+                description: 
+                  type: string
+                price: 
+                  type: number
+                max_places:
+                  type: integer
+                date:
+                  type: string
+                  format: date-time
+                  description: values of date YYYY/MM/DD HH:MI:SS
+                duration:
+                  type: integer
+                  description: duration value in minutes
+                photo:
+                  type: string
+                  format: binary
+                indoor:
+                  type: string
+                  enum:
+                    - 'true'
+                    - 'false'
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      
+      tags:
+      - GET PUT and DELETE events
 
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+    
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete an event by _id.
+      
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: event _id
+      
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+      
+      tags:
+      - GET PUT and DELETE events
+
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+
+    
 
   /api/v1/events/event/:
     get:
