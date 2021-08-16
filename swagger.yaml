@@ -652,7 +652,106 @@ paths:
             description: The user does not have privileges for this action
           '422':
             description: Unprocessable Entinty  
-        
+   
+  /api/v1/events:
+    get:
+      security:
+        - {}
+        - bearerAuth: []
+      summary: List of events. Only returns the event date will be after now.
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: title
+          schema:
+            type: string
+          required: false
+          description: Searches by word content and is not case sensitive.
+        - in: query
+          name: description
+          schema:
+            type: string
+          required: false
+          description: Searches by word content and is not case sensitive
+        - in: query
+          name: indoor
+          schema:
+            type: string
+            enum:
+              - 'true'
+              - 'false'
+          required: false
+          description: Searches by event in indoor or outdoor
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items:
+              type: string
+          required: false
+          description: Searches by event tags
+        - in: query
+          name: price
+          schema:
+            type: string
+          required: false
+          description: Supports single value 258.0 or between two values 0-258.3 Supports decimals with .   
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          required: false 
+            
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: false
+
+      tags:
+        - Get events
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+
   # /api/products:
   #   get:
   #     summary: Returns a list of products.
@@ -1001,9 +1100,11 @@ components:
                     format: uuid
                   username: 
                     type: string
+                    description: Show only if user is authenticated
                   email:
                     type: string
                     format: email
+                    description: Show only if user is authenticated
                   nickname: 
                     type: string
                   image:
