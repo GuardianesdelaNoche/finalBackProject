@@ -5,5 +5,5 @@
 *.db
 .DS_Store
 .vscode
-/public/images/photoEvent
+/public/images
 
