@@ -209,7 +209,7 @@ paths:
         - Control Users
       
       responses:
-        '200':    # status code
+        '201':    # status code
           description: A JSON object with data
           content:
             application/json:
@@ -239,7 +239,7 @@ paths:
       tags:
         - Control Users
       responses:
-        '200':    # status code
+        '201':    # status code
           description: A JSON object with data
           content:
             application/json:
@@ -264,7 +264,7 @@ paths:
       tags:
         - Recover password
       responses:
-        '200':    # status code
+        '201':    # status code
           description: A JSON object with data
           content:
             application/json:
@@ -502,7 +502,157 @@ paths:
             description: The user does not have privileges for this action
           '422':
             description: Unprocessable Entinty
-    
+  
+  /api/v1/eventsignup/favsignup:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Sing up in favorite events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventfavorite:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      tags: 
+        - Events sing up as favorite
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete _id user in favorite events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventfavorite:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      tags: 
+        - Events sing up as favorite
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+  /api/v1/eventsignup/assistsignup:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Sing up assistant event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventassistants:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      tags: 
+        - Events sing up as assistant
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete _id user in events assistant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventassistants:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      tags: 
+        - Events sing up as assistant
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+        
   # /api/products:
   #   get:
   #     summary: Returns a list of products.
@@ -875,4 +1025,4 @@ components:
               isAssistant:
                 type: boolean
             
-            
+         

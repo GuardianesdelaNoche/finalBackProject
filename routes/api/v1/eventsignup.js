@@ -32,7 +32,7 @@ router.put('/favsignup', jwtAuth,
         if (resultFav){
             return true
         } else {
-        throw new Error(`Event no exists`);
+            throw new Error(`Event no exists`);
         }
     }).escape().withMessage(`Event no exists`),
     
