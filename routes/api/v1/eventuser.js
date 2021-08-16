@@ -13,8 +13,8 @@ router.get('/ownevent',jwtAuth, async function(req, res, next) {
     req.query.apiAuthUserId = req.apiAuthUserId;
     req.query.limit || 100
     req.query.skip || 0
-    req.query.sort
-    req.query.active
+    // req.query.sort
+    // req.query.active
 
     const {rows} = await Event.findOwnEventsPaginate(req)
     const resultEnd = rows[0];
@@ -38,11 +38,11 @@ router.get('/favoriteevent',jwtAuth, async function(req, res, next) {
     req.query.apiAuthUserId = req.apiAuthUserId;
     req.query.limit || 100
     req.query.skip || 0
-    req.query.sort
-    req.query.active
-    req.query.long
-    req.query.lat
-    req.query.distance_m
+    // req.query.sort
+    // req.query.active
+    // req.query.long
+    // req.query.lat
+    // req.query.distance_m
     req.query.typeSearch = 'favorite'
 
     const {rows} = await Event.findFavoriteEventsPaginate(req)
@@ -68,11 +68,11 @@ router.get('/assistant',jwtAuth, async function(req, res, next) {
     req.query.apiAuthUserId = req.apiAuthUserId;
     req.query.limit || 100
     req.query.skip || 0
-    req.query.sort
-    req.query.active
-    req.query.long
-    req.query.lat
-    req.query.distance_m
+    // req.query.sort
+    // req.query.active
+    // req.query.long
+    // req.query.lat
+    // req.query.distance_m
     req.query.typeSearch = 'assistant'
 
     const {rows} = await Event.findAssistantsEventsPaginate(req)

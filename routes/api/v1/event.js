@@ -35,6 +35,9 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     const limit = parseInt(req.query.limit) || 100
     const sort = req.query.sort ==='asc' ? 1 : -1
     const filters = { date: { '$gte': new Date(Date.now())}}
+    const lat = req.query.lat? req.query.lat:null
+    const long = req.query.long? req.query.long:null
+    const distance_m = req.query.distance_m?req.query.distance_m:null
     
     if (req.query.title) {
       filters.title = new RegExp(req.query.title, 'i')
@@ -76,7 +79,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     }
     
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-    const {rows} = await Event.list(filters, skip, limit, sort, authenticate)
+    const {rows} = await Event.list(filters, skip, limit, sort, authenticate,lat,long,distance_m)
     const resultEnd = rows[0];
     const {total,result} = resultEnd;
     const count = total.length>0?total[0].count:0;
@@ -90,7 +93,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
 })
 
 
-//Get one event by _id with basic data
+//Get one event by _id with basic data +++++++++ Not documented +++++++++++
 router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const _id = req.params._id;
@@ -322,7 +325,7 @@ router.put('/:_id', jwtAuth, upload,[
       return;
     }
   
-    res.status(200).json({ result: updatedEvent });
+    res.status(201).json({ result: updatedEvent });
   
   } catch (error) {
     // const errorModify = error.toString().split(':')[1].trim();
