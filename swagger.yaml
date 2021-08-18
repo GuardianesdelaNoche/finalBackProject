@@ -729,6 +729,7 @@ paths:
           name: distance_m
           schema:
             type: number
+          description: distance in meters
           required: false 
             
         - in: header
@@ -967,7 +968,16 @@ paths:
             type: string
           required: true
           description: Event Id.
-
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false  
         - in: header
           name: x-access-token
           schema:
@@ -1172,6 +1182,9 @@ components:
                 type: integer
               available_places:
                 type: integer
+              event_distance:
+                type: number
+                description: Distance to event in meters.
               isOwner:
                 type: boolean
               isFavorite:
@@ -1249,6 +1262,9 @@ components:
               type: integer
             available_places:
               type: integer
+            event_distance:
+                type: number
+                description: Distance to event in meters.
             isOwner:
               type: boolean
             isFavorite:
