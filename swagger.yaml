@@ -129,7 +129,14 @@ paths:
         name: x-access-token
         schema:
           type: string
-        
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
       tags:
         - Control Users
       responses:
@@ -204,7 +211,15 @@ paths:
           name: x-access-token
           schema:
             type: string
-            
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          required: false
+          schema:
+            type: string
+            enum:
+              - en
+              - es    
       tags: 
         - Control Users
       
@@ -236,7 +251,15 @@ paths:
         name: x-access-token
         schema:
           type: string
-        required: true 
+        required: true
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
       tags:
         - Control Users
       responses:
@@ -261,7 +284,16 @@ paths:
               type: object
               properties:
                 email:
-                  type: string      
+                  type: string
+      parameters: 
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es     
       tags:
         - Recover password
       responses:
@@ -523,6 +555,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as favorite
 
@@ -560,6 +600,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as favorite
 
@@ -598,6 +646,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as assistant
 
@@ -635,6 +691,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as assistant
 
@@ -815,7 +879,15 @@ paths:
           name: x-access-token
           schema:
             type: string           
-      
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+
       tags:
       - GET PUT and DELETE events
 
@@ -830,6 +902,7 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty  
+    
     put:
       security:
         - bearerAuth: []
@@ -848,6 +921,14 @@ paths:
         name: x-access-token
         schema:
           type: string
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es
       requestBody:
         content:
           multipart/form-data:
