@@ -12,7 +12,6 @@ const responder = new cote.Responder({name: 'Transform zipCode'})
 const coord = async (country,zipCode) =>{
     try {
         const zipPos = await distCalc.codPostToLocation(country,zipCode);
-        console.log('The result is: ',zipPos);
         return zipPos
     } catch (error) {
         console.error(error);
@@ -28,8 +27,9 @@ responder.on('Transform zipCode', async (req, done) => {
 
     const zipCode = req.zipCode
     const country = req.country
-    const resultCoor = await coord(country,zipCode)
-    console.log('El resultado es:', resultCoor)
+    const resultCoor =  await coord(country,zipCode)
+    console.log('El resultado es:', resultCoor )
     //Devolvemos el nombre de la nueva imágen creada
-    done(resultCoor); 
+    //done(resultCoor); 
+    done('OK'); 
 });
