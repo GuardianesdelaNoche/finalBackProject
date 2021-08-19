@@ -12,6 +12,9 @@ const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
 const expressValidateUsername = require('../../../lib/expressValidateUsername')
 
+const cote = require('cote');
+const requester = new cote.Requester({name: 'Transform zipCode'});
+
 
 const User = require('../../../models/User');
 const Event = require('../../../models/Event')
@@ -216,5 +219,24 @@ router.get ('/availablePlaces', async function(req,res,next){
         next(error)
     }
 });
+
+router.get ('/zipCoor', async function(req,res,next){
+    try {
+        requester.send({
+            type: 'Transform zipCode',
+            zipCode: '50100' ,
+            country: 'Spain',
+        }, resultado =>{
+            if (!resultado) {
+                console.erro('Error en microservice al crear el thumbnail')}
+            //console.log(`Cambiamos el nombre de la imágen a : ${resultado}`)
+        })
+        res.status(201).json({result: 'Todo OK'});
+    } catch (error) {
+        next(error)
+    }
+
+});
+
 
 module.exports = router;
