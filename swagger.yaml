@@ -432,11 +432,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
@@ -505,11 +507,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
@@ -784,11 +788,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
@@ -1054,11 +1060,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
-          required: false  
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.' 
         - in: header
           name: x-access-token
           schema:
