@@ -269,9 +269,7 @@ async (req, res, next) =>{
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
         const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location} = updateUser
-        if(!location && postal_code){
-            console.log('llamada a microservicio')
-        }
+        
         
         res.status(201).json({result:{_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location}});
         
