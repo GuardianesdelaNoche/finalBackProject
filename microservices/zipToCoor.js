@@ -2,6 +2,11 @@
 
 const cote = require('cote');
 const distCalc = require('pepe-distcalc')
+const User = require('../models/User');
+const mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+require('dotenv').config();
+require('../lib/connectMongoose');
 
 //Postal code to coordinates conversion service
 
@@ -22,14 +27,27 @@ const coord = async (country,zipCode) =>{
 //test4('Spain','08210');
 
 
-//Lógica del microservicio
+//Microservice
 responder.on('Transform zipCode', async (req, done) => {
 
     const zipCode = req.zipCode
     const country = req.country
-    const resultCoor =  await coord(country,zipCode)
-    console.log('El resultado es:', resultCoor )
-    //Devolvemos el nombre de la nueva imágen creada
-    //done(resultCoor); 
-    done('OK'); 
+    const idUser = req.idUser
+    try {
+        const resultCoor =  await coord(country,zipCode)
+         if (resultCoor.coord){
+            const coordinates = resultCoor.coord.lat? [resultCoor.coord.lon,resultCoor.coord.lat]:[]
+            const valObject= {}
+            coordinates.length ? valObject.location = {'coordinates': coordinates, 'type':'Point'}:{};
+            const updateUser = await User.findByIdAndUpdate(
+                {_id: idUser },
+                {$set: valObject},
+                {new: true}
+            )
+         }
+        done({city:resultCoor.city}); 
+    } catch (error) {
+        console.error(error)
+    }
+    
 });
