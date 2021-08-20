@@ -229,7 +229,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/RegisterUser'
+                $ref: '#/components/schemas/putUser'
         '403':    
           description: The user does not have privileges for this action
         '422':
@@ -1360,4 +1360,47 @@ components:
               type: boolean
             isAssistant:
               type: boolean
-         
+    putUser:
+      type: object
+      properties: 
+        event:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            username:
+              type: string
+            email:
+              type: string
+              format: e-mail
+            address:
+              type: string
+            city:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+            role:
+              type: integer
+            phone:
+              type: string
+            nickname:
+              type: string
+            image:
+              type: string
+              format: uri
+            created_date:
+              type: string
+              format: date-time
+            location:
+              type: array
+              items:
+                $ref: "#/components/schemas/Point"
+
+
+            
+
+            
+        

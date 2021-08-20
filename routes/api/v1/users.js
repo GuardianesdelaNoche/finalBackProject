@@ -268,9 +268,16 @@ async (req, res, next) =>{
         const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
-        const {_id,username,nickname,email} = updateUser
-        res.status(201).json({result:{_id,username,nickname}});
+        const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location} = updateUser
+        if(!location && postal_code){
+            console.log('llamada a microservicio')
+        }
         
+        res.status(201).json({result:{_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location}});
+        
+        
+
+
     }else{
         const err = new Error(i18n.__('The user does not have privileges for this action'));
         err.status = 403
