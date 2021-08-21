@@ -129,7 +129,14 @@ paths:
         name: x-access-token
         schema:
           type: string
-        
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
       tags:
         - Control Users
       responses:
@@ -204,7 +211,15 @@ paths:
           name: x-access-token
           schema:
             type: string
-            
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          required: false
+          schema:
+            type: string
+            enum:
+              - en
+              - es    
       tags: 
         - Control Users
       
@@ -214,7 +229,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/RegisterUser'
+                $ref: '#/components/schemas/putUser'
         '403':    
           description: The user does not have privileges for this action
         '422':
@@ -236,7 +251,15 @@ paths:
         name: x-access-token
         schema:
           type: string
-        required: true 
+        required: true
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
       tags:
         - Control Users
       responses:
@@ -261,7 +284,16 @@ paths:
               type: object
               properties:
                 email:
-                  type: string      
+                  type: string
+      parameters: 
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es     
       tags:
         - Recover password
       responses:
@@ -400,11 +432,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
@@ -473,11 +507,13 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
@@ -523,6 +559,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as favorite
 
@@ -560,6 +604,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as favorite
 
@@ -598,6 +650,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as assistant
 
@@ -635,6 +695,14 @@ paths:
           name: x-access-token
           schema:
             type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
       tags: 
         - Events sing up as assistant
 
@@ -720,15 +788,18 @@ paths:
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: long
           schema:
             type: number
           required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
         - in: query
           name: distance_m
           schema:
             type: number
+          description: distance in meters
           required: false 
             
         - in: header
@@ -814,7 +885,15 @@ paths:
           name: x-access-token
           schema:
             type: string           
-      
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+
       tags:
       - GET PUT and DELETE events
 
@@ -829,6 +908,7 @@ paths:
           description: The user does not have privileges for this action
         '422':
           description: Unprocessable Entinty  
+    
     put:
       security:
         - bearerAuth: []
@@ -847,6 +927,14 @@ paths:
         name: x-access-token
         schema:
           type: string
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es
       requestBody:
         content:
           multipart/form-data:
@@ -967,7 +1055,18 @@ paths:
             type: string
           required: true
           description: Event Id.
-
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.' 
         - in: header
           name: x-access-token
           schema:
@@ -1172,6 +1271,9 @@ components:
                 type: integer
               available_places:
                 type: integer
+              event_distance:
+                type: number
+                description: Distance to event in meters.
               isOwner:
                 type: boolean
               isFavorite:
@@ -1249,10 +1351,56 @@ components:
               type: integer
             available_places:
               type: integer
+            event_distance:
+                type: number
+                description: Distance to event in meters.
             isOwner:
               type: boolean
             isFavorite:
               type: boolean
             isAssistant:
               type: boolean
-         
+    putUser:
+      type: object
+      properties: 
+        event:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            username:
+              type: string
+            email:
+              type: string
+              format: e-mail
+            address:
+              type: string
+            city:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+            role:
+              type: integer
+            phone:
+              type: string
+            nickname:
+              type: string
+            image:
+              type: string
+              format: uri
+            created_date:
+              type: string
+              format: date-time
+            location:
+              type: array
+              items:
+                $ref: "#/components/schemas/Point"
+
+
+            
+
+            
+        

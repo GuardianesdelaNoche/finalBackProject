@@ -8,6 +8,9 @@ const path = require('path');
 const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
 
+const cote = require('cote');
+const requester = new cote.Requester({name: 'Transform zipCode'});
+
 
 const User = require('../../../models/User');
 
@@ -110,7 +113,21 @@ router.post('/', upload,
         const longitude = req.body.longitude ? req.body.longitude : 200
         const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? [] : [longitude,latitude]
         const newUser = await User.newUser(req.body,namePhoto,coordinates);
-        const {_id,username,nickname} = newUser
+        const {_id,username,nickname,location,postal_code} = newUser
+        
+        if (!location.coordinates && postal_code){
+            requester.send({
+                type: 'Transform zipCode',
+                zipCode: postal_code ,
+                country: 'Spain',
+                idUser: _id,
+            }, resultado =>{
+                if (!resultado) {
+                    console.error('Error in microservice')
+                }
+            })
+
+        } 
         res.status(201).json({result:{_id,username,nickname}});
     
     } catch (error) {

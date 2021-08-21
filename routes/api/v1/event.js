@@ -35,9 +35,9 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     const limit = parseInt(req.query.limit) || 100
     const sort = req.query.sort ==='asc' ? 1 : -1
     const filters = { date: { '$gte': new Date(Date.now())}}
-    const lat = req.query.lat? req.query.lat:null
-    const long = req.query.long? req.query.long:null
-    const distance_m = req.query.distance_m?req.query.distance_m:null
+    const lat = req.query.lat? Number(req.query.lat):null
+    const long = req.query.long? Number(req.query.long):null
+    const distance_m = req.query.distance_m? Number(req.query.distance_m):null
     
     if (req.query.title) {
       filters.title = new RegExp(req.query.title, 'i')
@@ -118,10 +118,12 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
 router.get('/event/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const eventId = req.params._id;
-    const latitude='';
-    const longitude='';
+    const lat = req.query.lat? Number(req.query.lat):null
+    const long = req.query.long? Number(req.query.long):null
+    //const distance_m = req.query.distance_m? Number(req.query.distance_m):null
+    
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-    const event = await Event.listOne(authenticate,eventId,latitude,longitude)
+    const event = await Event.listOne(authenticate,eventId,lat,long)
     const resultEnd = event[0];
     const {result} = resultEnd;
     return res.status(200).json({event: result[0]});

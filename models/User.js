@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const Event = require('./Event');
-const { PreconditionFailed } = require('http-errors');
+//const { PreconditionFailed } = require('http-errors');
 var Schema = mongoose.Schema;
 
 const userSchema = mongoose.Schema({

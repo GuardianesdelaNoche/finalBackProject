@@ -61,38 +61,38 @@ router.post('/recoverpass',
                 return req.__('Data, incorrect format', { value, location, path });
               }
         )
-        ] ,async(req,res,next) => {
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        // return res.status(422).json({ errors: errors.array()});
-        return res.status(422).json({ error: errors.array()[0].msg});
-    }
+        ] 
+        ,async(req,res,next) => {
+            i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                // return res.status(422).json({ errors: errors.array()});
+                return res.status(422).json({ error: errors.array()[0].msg});
+            }
 
-    try {
-       //Validate id e-mail exixsts
-        const userEx = await User.getUserEmail(req.body.email)
-    if (!userEx){
-        throw new Error(i18n.__("User not exists"))
-    } 
-    const recoverToken = await recoverPassController(req.body.email);
-    if (recoverToken){
-        //Send  email
-        const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
-                `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`)
-                
-        if (respuesta.accepted.length>0){
-            res.status(201).json({result:'OK'});
-        } else {
-            res.status(422).json({result:'KO'});
-        }
-        //res.status(201).json({result:respuesta});
-    }
+            try {
+                //Validate id e-mail exixsts
+                    const userEx = await User.getUserEmail(req.body.email)
+                if (!userEx){
+                    throw new Error(i18n.__("User not exists"))
+                } 
+                const recoverToken = await recoverPassController(req.body.email);
+                if (recoverToken){
+                    //Send  email
+                    const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
+                            `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`)
+                            
+                    if (respuesta.accepted.length>0){
+                        res.status(201).json({result:'OK'});
+                    } else {
+                        res.status(422).json({result:'KO'});
+                    }
+                    //res.status(201).json({result:respuesta});
+                }
 
-
-    } catch (error) {
-        next(error);
-    }
+            } catch (error) {
+                next(error);
+            }
 
 });
 
@@ -249,10 +249,7 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
         (value, { req, location, path }) => {
             return req.__('Nickname, already exists', { value, location, path });
           }
-        ),
-        
-
-     
+        ),    
  ], 
 async (req, res, next) =>{
  try {
@@ -271,9 +268,14 @@ async (req, res, next) =>{
         const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
-        const {_id,username,nickname,email} = updateUser
-        res.status(201).json({result:{_id,username,nickname}});
+        const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location} = updateUser
         
+        
+        res.status(201).json({result:{_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location}});
+        
+        
+
+
     }else{
         const err = new Error(i18n.__('The user does not have privileges for this action'));
         err.status = 403
