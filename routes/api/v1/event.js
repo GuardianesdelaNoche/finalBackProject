@@ -91,6 +91,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
         throw new Error(i18n.__("User not exists"))
       }
     }
+    
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate,lat,long,distance_m)
     const resultEnd = rows[0];
@@ -222,7 +223,6 @@ router.post('/', jwtAuth, upload,[
     const longitude = req.body.longitude ? req.body.longitude : 200
     const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
     const namePhoto = req.file ? req.file.filename :'dei.png';
-  
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -317,13 +317,14 @@ router.put('/:_id', jwtAuth, upload,[
     const { _id } = req.params;
     //const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
     i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
-    const description = req.body.description ? req.body.description : '';
-    const max_places = req.body.max_places ? req.body.max_places : 0;
-    const namePhoto = req.file ? req.file.filename :'';
+    //const description = req.body.description ? req.body.description : '';
+    //const max_places = req.body.max_places ? req.body.max_places : 0;
+    
     const latitude = req.body.latitude ? req.body.latitude : 200
     const longitude = req.body.longitude ? req.body.longitude : 200
     const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
-    
+    const namePhoto = req.file ? req.file.filename :'';
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -331,18 +332,30 @@ router.put('/:_id', jwtAuth, upload,[
         return res.status(422).json({ error: errors.array()[0].msg});
     }
   
-    const updatedEvent = await Event
-    .findByIdAndUpdate(
-      _id, 
-      {$set: req.body},
-      { useFindAndModify: false} )
+    const isOwnOrAdmin = await Event.existsIdUserOwner(req.apiAuthUserId,_id)
+
+    //This operation can only be performed by the event owner or a super administrator
+    if(isOwnOrAdmin>0 || req.apiAuthUserRole === 9){
+      const updatedEvent = await Event.updateEvent(_id,req.body,namePhoto,coordinates)
     
-    if (!updatedEvent) {
-      res.status(404).json({ error: 'not found' });
-      return;
+      if (!updatedEvent) {
+        res.status(404).json({ error: 'not found' });
+        return;
+      }
+    
+      res.status(201).json({ result: updatedEvent });
+    
+    }else{
+      throw new Error(i18n.__('The user does not have privileges for this action'));
     }
-  
-    res.status(201).json({ result: updatedEvent });
+    
+    // const updatedEvent = await Event
+    // .findByIdAndUpdate(
+    //   _id, 
+    //   {$set: req.body},
+    //   { useFindAndModify: false} )
+    
+    
   
   } catch (error) {
     // const errorModify = error.toString().split(':')[1].trim();

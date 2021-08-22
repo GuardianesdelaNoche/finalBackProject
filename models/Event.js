@@ -206,6 +206,14 @@ eventSchema.statics.existsIdUserAssistant = function(idUser, idEvent){
   return assistant
 };
 
+//Exists idUser in owner?
+eventSchema.statics.existsIdUserOwner = function(idUser, idEvent){
+  const id = new mongoose.Types.ObjectId(idUser);
+  const idEv = mongoose.Types.ObjectId(idEvent);
+  const assistant = Event.countDocuments({_id: idEv, _id_owner: id}).exec()
+  return assistant
+};
+
 //Available Places
 //available_places: {$subtract:['$max_places',{$size: '$_id_assistants'}]},
 eventSchema.statics.availablePlaces = async function(idEvent){
@@ -215,6 +223,32 @@ eventSchema.statics.availablePlaces = async function(idEvent){
   return available
 };
 
+eventSchema.statics.updateEvent = async function(idEvent,reqValues,namePhoto,coordinates){
+  const valUpdate = reqValues
+  const valObject= {}
+  
+  valUpdate.title ? valObject.title = valUpdate.title:{}
+  valUpdate.description ? valObject.description = valUpdate.description:{}
+  valUpdate.price ? valObject.price = valUpdate.price:{}
+  valUpdate.max_places ? valObject.max_places = valUpdate.max_places:{}
+  valUpdate.date ? valObject.date = valUpdate.date:{}
+  valUpdate.duration ? valObject.duration = valUpdate.duration:{}
+  valUpdate.indoor ? valObject.indoor = valUpdate.indoor:{}
+  valUpdate.city ? valObject.city = valUpdate.city:{}
+  valUpdate.address ? valObject.address = valUpdate.address:{}
+  valUpdate.postal_code ? valObject.postal_code = valUpdate.postal_code:{}
+  valUpdate.country ? valObject.country = valUpdate.country:{}
+  valUpdate.tags ? valObject.tags = valUpdate.tags:{}
+  namePhoto ? valObject.photo = namePhoto:{};
+  coordinates.length ? valObject.location = {'coordinates': coordinates, 'type':'Point'}:{};
+
+  const updateEvent = Event.findByIdAndUpdate(
+    {_id: idEvent },
+    {$set: valObject},
+    {new: true}
+  ).exec()
+  return updateEvent
+}
   
 const Event = mongoose.model('Event', eventSchema);
 
