@@ -74,6 +74,11 @@ userSchema.statics.existsNickName = function(nickname){
     return isUserNickName.exec()
 }
 
+userSchema.statics.userByName = function(userNameConst){
+    const userNameRet = User.findOne({username:{ $regex : new RegExp(userNameConst.toLowerCase(), "i") },deleted:null})
+    return userNameRet.exec()
+}
+
 //Create a new user
 userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[]){
     if(namePhoto){

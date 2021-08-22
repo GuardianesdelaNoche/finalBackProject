@@ -2,6 +2,7 @@
 
 const router = require('express').Router();
 const Event = require('../../../models/Event');
+const User = require('../../../models/User');
 const path = require('path');
 const multer = require('multer');
 const {body,validationResult} = require('express-validator');
@@ -38,6 +39,7 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     const lat = req.query.lat? Number(req.query.lat):null
     const long = req.query.long? Number(req.query.long):null
     const distance_m = req.query.distance_m? Number(req.query.distance_m):null
+    const userName = req.query.userName?req.query.userName:null
     
     if (req.query.title) {
       filters.title = new RegExp(req.query.title, 'i')
@@ -49,7 +51,6 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     if (req.query.indoor) {
       const myBool = (req.query.indoor.toLowerCase() === 'true');
       filters.indoor = myBool
-      
     }
     
     if (req.query.tags) {
@@ -77,7 +78,19 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
         filters.price = Number(req.query.price)
       }
     }
-    
+    if (userName){
+      //First we verify that the user exists
+      const usrExist = await User.existsUserName(userName)
+      if (usrExist > 0){
+        const userN = await User.userByName(userName);
+        const {_id} = userN
+        if (_id){
+         filters._id_owner = _id
+        }
+      }else{
+        throw new Error(i18n.__("User not exists"))
+      }
+    }
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
     const {rows} = await Event.list(filters, skip, limit, sort, authenticate,lat,long,distance_m)
     const resultEnd = rows[0];
