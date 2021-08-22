@@ -917,7 +917,7 @@ paths:
     put:
       security:
         - bearerAuth: []
-      summary: Modify an event by _id.
+      summary: Modify an event by _id. This operation can only be performed by the event owner or a super administrator
       
       parameters:
       - in: path
