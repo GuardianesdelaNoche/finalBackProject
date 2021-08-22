@@ -801,7 +801,12 @@ paths:
             type: number
           description: distance in meters
           required: false 
-            
+        - in: query
+          name: userName
+          schema:
+            type: string
+          description: User name. Filter by user events
+          required: false   
         - in: header
           name: x-access-token
           schema:
