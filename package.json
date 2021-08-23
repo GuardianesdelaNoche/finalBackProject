@@ -6,7 +6,9 @@
     "start": "node ./bin/www",
     "loadUsers": "node ./lib/loadUsers.js",
     "dev": "cross-env PORT=3000 NODE_ENV=development DEBUG=nodeapi:* nodemon",
-    "actionDB": "node ./scriptDatabase/actionDB.js"
+    "actionDB": "node ./scriptDatabase/actionDB.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent tests/tags.test.js",
+    "test:watch":"npm run test -- --watch"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -31,5 +33,8 @@
     "password-validator": "^5.1.1",
     "swagger-ui-express": "^4.1.6",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "supertest": "^6.1.5"
   }
 }

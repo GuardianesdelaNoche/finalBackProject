@@ -17,4 +17,20 @@ router.get('/', async function (req, res, next) {
     }
 })
 
+router.post('/', async (req, res, next) => {
+
+  try {
+    const { name } = req.body;
+
+    const tag = new Tag({name})
+  
+    const saveResult = await tag.save();
+   
+    res.status(201).json({ result: tag});    
+  } catch (error) {
+  
+    next(error)
+  }
+
+});
 module.exports = router
