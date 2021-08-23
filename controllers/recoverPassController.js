@@ -18,7 +18,7 @@ async function recoverPassController(email){
            
             //if user exists
             //Create a signed token and send to e-mail
-            return jwt.sign({ _id: user._id, role: 99 }, process.env.JWT_SECRET, { expiresIn: 240 });
+            return jwt.sign({ _id: user._id, role: 99 }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_RECOVER});
         } catch(err){
             return err;
         }
