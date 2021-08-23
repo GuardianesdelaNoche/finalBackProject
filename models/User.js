@@ -104,6 +104,11 @@ userSchema.statics.getUser = function(idUser){
     return query.exec();
 }
 
+ //GET Users_id
+ userSchema.statics.getUser_id = function(){
+    const query = User.find({}).select('_id');
+    return query.exec();
+}
 
  //GET User by e-mail
  userSchema.statics.getUserEmail = function(email){

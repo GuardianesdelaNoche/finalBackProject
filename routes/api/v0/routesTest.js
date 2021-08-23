@@ -238,5 +238,17 @@ router.get ('/zipCoor', async function(req,res,next){
 
 });
 
+router.get ('/userById', async function(req,res,next){
+
+    try {
+       
+        
+        const resultado = await User.getUser_id();
+        
+        res.status(201).json({result: resultado})
+    } catch (error) {
+        next(error)
+    }
+});
 
 module.exports = router;

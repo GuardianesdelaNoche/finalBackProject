@@ -45,8 +45,8 @@ app.use('/api/v1/tags', require('./routes/api/v1/tag'));
 app.use('/api/v1/eventsuser', require('./routes/api/v1/eventuser'));
 app.use('/api/v1/eventsignup', require('./routes/api/v1/eventsignup'))
 
-
 app.use('/api/v1/users', require('./routes/api/v1/users'));
+app.use('/api/v1/usersId', require('./routes/api/v1/usersId'));
 app.use('/api/v0/routesTest', require('./routes/api/v0/routesTest'));
 //app.use('/', indexRouter);
 //app.use('/users', usersRouter);
