@@ -118,8 +118,7 @@ router.get('/:id_user?', jwtAuth, async function(req,res,next){
     } catch (error) {
         next(error);
     }
-})
-
+});
 
 //Delete user
 router.delete('/:id_user?', jwtAuth, async function(req,res,next){
@@ -286,8 +285,6 @@ async (req, res, next) =>{
      next(error)      
     }
 });
-
-
 
 
 module.exports = router;
