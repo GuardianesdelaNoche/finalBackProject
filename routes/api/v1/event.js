@@ -88,7 +88,10 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
          filters._id_owner = _id
         }
       }else{
-        throw new Error(i18n.__("User not exists"))
+        const error = new Error(i18n.__("User not exists"));
+        error.status = 404;
+        next(error);
+        //throw new Error(i18n.__("User not exists"))
       }
     }
     
@@ -100,8 +103,6 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
     res.json({ total:count, events: result })
 
   } catch (error) { 
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
     next(error)
   }
 })
@@ -122,8 +123,6 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
     }
 
   } catch (error) { 
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
     next(error)
   }
 });
@@ -134,8 +133,6 @@ router.get('/event/:_id',jwtAuthOptional, async function (req, res, next) {
     const eventId = req.params._id;
     const lat = req.query.lat? Number(req.query.lat):null
     const long = req.query.long? Number(req.query.long):null
-    //const distance_m = req.query.distance_m? Number(req.query.distance_m):null
-    
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
     const event = await Event.listOne(authenticate,eventId,lat,long)
     const resultEnd = event[0];
@@ -190,9 +187,7 @@ router.post('/', jwtAuth, upload,[
     }
     ),
   body('date').optional().custom((date)=>{
-    //const resultEI = await expresValidate(req);
-    
-      // 
+    //TODO
       return true
   }).escape().withMessage(
     (value, { req, location, path }) => {
@@ -226,7 +221,6 @@ router.post('/', jwtAuth, upload,[
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        // return res.status(422).json({ errors: errors.array()});
         return res.status(422).json({ error: errors.array()[0].msg});
     }
     
@@ -243,8 +237,6 @@ router.post('/', jwtAuth, upload,[
    
     res.status(201).json({ result: event});    
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: error.errors ? error._message : errorModify });
     next(error)
   }
 
@@ -263,12 +255,9 @@ router.delete('/:_id', jwtAuth, async (req, res, next) => {
     } {
       const {_id} = deletedEvent
       res.status(201).json({result:_id});
-      //res.status(201).json(`${deletedEvent._id} deleted`);
     }
 
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
     next(error)
   }
 
@@ -315,10 +304,7 @@ router.put('/:_id', jwtAuth, upload,[
 
   try {
     const { _id } = req.params;
-    //const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
     i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
-    //const description = req.body.description ? req.body.description : '';
-    //const max_places = req.body.max_places ? req.body.max_places : 0;
     
     const latitude = req.body.latitude ? req.body.latitude : 200
     const longitude = req.body.longitude ? req.body.longitude : 200
@@ -328,7 +314,6 @@ router.put('/:_id', jwtAuth, upload,[
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        //return res.status(422).json({errors: errors});
         return res.status(422).json({ error: errors.array()[0].msg});
     }
   
@@ -346,20 +331,13 @@ router.put('/:_id', jwtAuth, upload,[
       res.status(201).json({ result: updatedEvent });
     
     }else{
-      throw new Error(i18n.__('The user does not have privileges for this action'));
+      const error = new Error(i18n.__('The user does not have privileges for this action'));
+      error.status = 401;
+      next(error);
+      
     }
-    
-    // const updatedEvent = await Event
-    // .findByIdAndUpdate(
-    //   _id, 
-    //   {$set: req.body},
-    //   { useFindAndModify: false} )
-    
-    
-  
+     
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
     next(error)
   }
 
