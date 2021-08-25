@@ -88,7 +88,7 @@ This service has different endpoints and these are next:
 - **POST /api/v1/user/register/{body params}:** Register a new user
 - **POST /api/v1/user/recoverpass:** Recover password
 - **GET /api/v1/tags:** List all tags
-- **POST /api/v1/events/{body params}:** Ads creation.
+- **POST /api/v1/events/{body params}:** Events creation.
 
 ## To try endpoints with Swagger
 
