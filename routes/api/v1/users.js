@@ -13,7 +13,7 @@ const recoverPassController = require('../../../controllers/recoverPassControlle
 const expresValidateEmail = require('../../../lib/expressValidateEmail');
 const expressValidateUsername = require('../../../lib/expressValidateUsername');
 const expressValidateNickname = require('../../../lib/expressValidateNickname');
-//const fs = require('fs');
+const plantillaEmail = require('../../../lib/plantillaEmail');
 
 const User = require('../../../models/User');
 const Event = require('../../../models/Event');
@@ -77,12 +77,18 @@ router.post('/recoverpass',
                 if (!userEx){
                     throw new Error(i18n.__("User not exists"));
                 } 
+                const nickName = await User.getNikNameByEmail(req.body.email);
+
                 const recoverToken = await recoverPassController(req.body.email);
                 if (recoverToken){
+            
+                    const bodyEmail =  plantillaEmail(nickName, process.env.LINK_RECOVER_EMAIL+recoverToken);
                     //Send  email
-                    const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
-                            `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`);
-                            
+                    // const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
+                    //         `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`);
+                    
+                    const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',bodyEmail);
+                                   
                     if (respuesta.accepted.length>0){
                         res.status(201).json({result:'OK'});
                     } else {

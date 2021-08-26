@@ -116,6 +116,12 @@ userSchema.statics.getUser = function(idUser){
     return query.exec();
 };
 
+//GET User NickName by e-mail
+userSchema.statics.getNikNameByEmail = function(email){
+    const query = User.findOne({email}).select('nickname');
+    return query.exec();
+};
+
  //Delete User
 userSchema.statics.deleteUser = function(idUser){
      const query = User.findOneAndDelete({_id:idUser});
