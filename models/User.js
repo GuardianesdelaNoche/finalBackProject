@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const Event = require('./Event');
+//const Event = require('./Event');
 //const { PreconditionFailed } = require('http-errors');
 var Schema = mongoose.Schema;
 
@@ -30,97 +30,97 @@ const userSchema = mongoose.Schema({
 userSchema.index({ "location": "2dsphere" });
 
 userSchema.virtual('calc_my_events').get(function(){
-    return this.my_events.length
-})
+    return this.my_events.length;
+});
 
 userSchema.statics.hashPassword = function(passwordOriginal){
     return bcrypt.hash(passwordOriginal, 10);
-}
+};
 
 userSchema.methods.comparePassword = function(passwordOriginal){
     return bcrypt.compare(passwordOriginal, this.password);
-}
+};
 
 //Validate exists email and user id 
 userSchema.statics.existsEmail = function(email,id){
-    const idUser_2 = new mongoose.Types.ObjectId(id)
-    const isUser = User.countDocuments({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:idUser_2, deleted:null})
+    const idUser_2 = new mongoose.Types.ObjectId(id);
+    const isUser = User.countDocuments({email: { $regex : new RegExp(email.toLowerCase(), "i") },_id:idUser_2, deleted:null});
   
-    return isUser.exec()
-}
+    return isUser.exec();
+};
 
 //UserName exists in the same user that owner
 userSchema.statics.existsUserNameId = function(username,id){
-    const idUser_2 = new mongoose.Types.ObjectId(id)
-    const isUserNameId = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },_id:idUser_2, deleted:null})
-    return isUserNameId.exec()
-}
+    const idUser_2 = new mongoose.Types.ObjectId(id);
+    const isUserNameId = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },_id:idUser_2, deleted:null});
+    return isUserNameId.exec();
+};
 
 //NickName exists in the same user that owner
 userSchema.statics.existsNickNameId = function(nickname,id){
-    const idUser_2 = new mongoose.Types.ObjectId(id)
-    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },_id:idUser_2, deleted:null})
-    return isUserNickName.exec()
-}
+    const idUser_2 = new mongoose.Types.ObjectId(id);
+    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },_id:idUser_2, deleted:null});
+    return isUserNickName.exec();
+};
 //Username exists
 userSchema.statics.existsUserName = function(username){
-    const isUserName = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },deleted:null})
-    return isUserName.exec()
-}
+    const isUserName = User.countDocuments({username: { $regex : new RegExp(username.toLowerCase(), "i") },deleted:null});
+    return isUserName.exec();
+};
 
 //NickName exists
 userSchema.statics.existsNickName = function(nickname){
-    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },deleted:null})
-    return isUserNickName.exec()
-}
+    const isUserNickName = User.countDocuments({nickname:{ $regex : new RegExp(nickname.toLowerCase(), "i") },deleted:null});
+    return isUserNickName.exec();
+};
 
 userSchema.statics.userByName = function(userNameConst){
-    const userNameRet = User.findOne({username:{ $regex : new RegExp(userNameConst.toLowerCase(), "i") },deleted:null})
-    return userNameRet.exec()
-}
+    const userNameRet = User.findOne({username:{ $regex : new RegExp(userNameConst.toLowerCase(), "i") },deleted:null});
+    return userNameRet.exec();
+};
 
 //Create a new user
 userSchema.statics.newUser = async function(userNew,namePhoto='',coordinates=[]){
     if(namePhoto){
-        Object.assign(userNew,{'image': namePhoto})
+        Object.assign(userNew,{'image': namePhoto});
     } else {
-        Object.assign(userNew,{'image': 'DefaultUserImage.png'}) 
+        Object.assign(userNew,{'image': 'DefaultUserImage.png'}); 
     }
 
     if(coordinates.length){
-        Object.assign(userNew,{'location':{'coordinates': coordinates, 'type':'Point'}})
+        Object.assign(userNew,{'location':{'coordinates': coordinates, 'type':'Point'}});
     }
-    const encriptPass = await User.hashPassword(userNew.password)
-    const userEncript = {...userNew,password:encriptPass}
+    const encriptPass = await User.hashPassword(userNew.password);
+    const userEncript = {...userNew,password:encriptPass};
     const user = new User(userEncript);
     const createUser = user.save();
     return createUser;
-}
+};
 
  //GET User
 userSchema.statics.getUser = function(idUser){
     //const query = User.findById(idUser).populate('suscribe_events');
     const query = User.findById(idUser);
     return query.exec();
-}
+};
 
  //GET Users_id
  userSchema.statics.getUser_id = function(){
     const query = User.find({}).select('_id');
     return query.exec();
-}
+};
 
  //GET User by e-mail
  userSchema.statics.getUserEmail = function(email){
     const query = User.countDocuments({email});
     return query.exec();
-}
+};
 
  //Delete User
 userSchema.statics.deleteUser = function(idUser){
-     const query = User.findOneAndDelete({_id:idUser})
+     const query = User.findOneAndDelete({_id:idUser});
      return query.exec();
-}
+};
 
 //Delete User image if is not a DefaultUserImage.png
 /**
@@ -132,15 +132,15 @@ userSchema.statics.deleteUser = function(idUser){
  * Update user 
  */
  userSchema.statics.updateUser = async function(idUser,reqValues,namePhoto='',coordinates=[]){
-    const valUpdate = reqValues
-    const valObject= {}
+    const valUpdate = reqValues;
+    const valObject= {};
     if (valUpdate.password){
-        const encriptPass = await User.hashPassword(valUpdate.password)
-        valObject.password = encriptPass
+        const encriptPass = await User.hashPassword(valUpdate.password);
+        valObject.password = encriptPass;
     }
     
 
-    valUpdate.username ? valObject.username = valUpdate.username:{}
+    valUpdate.username ? valObject.username = valUpdate.username:{};
     valUpdate.email ? valObject.email = valUpdate.email:{};
     valUpdate.address ? valObject.address = valUpdate.address:{};
     valUpdate.city ? valObject.city = valUpdate.city:{};
@@ -156,10 +156,10 @@ userSchema.statics.deleteUser = function(idUser){
         {_id: idUser },
         {$set: valObject},
         {new: true}
-    ).exec()
-        return updateUser
+    ).exec();
+        return updateUser;
 
- }
+ };
 
 
 
@@ -169,8 +169,8 @@ userSchema.statics.addSuscribe_Events = function(idUser,idEvent){
         {_id: idUser },
         {$addToSet: {suscribe_events: idEvent } },
         {new: true}
-    ).exec()
-        return updateSuscribe
+    ).exec();
+        return updateSuscribe;
 };
 ////Delete Event _id in suscribe_events
 userSchema.statics.delSuscribe_Events = function(idUser,idEvent){
@@ -178,8 +178,8 @@ userSchema.statics.delSuscribe_Events = function(idUser,idEvent){
         {_id: idUser },
         {$pull: {suscribe_events: idEvent } },
         {new: true}
-    ).exec()
-        return deleteSuscribe
+    ).exec();
+        return deleteSuscribe;
 };
 
 // Add a new Event _id in my_events
@@ -188,8 +188,8 @@ userSchema.statics.addMy_Events = function(idUser,idEvent){
         {_id: idUser },
         {$addToSet: {my_events: idEvent } },
         {new: true}
-    ).exec()
-        return updateMy
+    ).exec();
+        return updateMy;
 };
 
 // Delete Event _id in my_events
@@ -198,8 +198,8 @@ userSchema.statics.delMy_Events = function(idUser,idEvent){
         {_id: idUser },
         {$pull: {my_events: idEvent } },
         {new: true}
-    ).exec()
-        return deleteMy
+    ).exec();
+        return deleteMy;
 };
 
 
@@ -209,8 +209,8 @@ userSchema.statics.addFavEvents = function(idUser,idEvent){
         {_id: idUser },
         {$addToSet: {fav_events: idEvent } },
         {new: true}
-    ).exec()
-        return updateFav
+    ).exec();
+        return updateFav;
 };
 
 // Delete Event _id in fav_events 
@@ -219,12 +219,14 @@ userSchema.statics.delFavEvents = function(idUser,idEvent){
         {_id: idUser },
         {$addToSet: {fav_events: idEvent } },
         {new: true}
-    ).exec()
-        return deleteFav
+    ).exec();
+        return deleteFav;
 };
 
 //Find own events
+// eslint-disable-next-line no-unused-vars
 userSchema.statics.findOwnEventsE = function(idUser, activeEvents = true){
+    // eslint-disable-next-line no-unused-vars
     let currentDate = new Date();
     // const findEvents = User.find( {$and:[{'_id':idUser},{'my_events.date':{ $lte: Date.now()}}]}).populate('my_events').exec()
     //const findEvents = User.find({_id:idUser}).populate('my_events').exec()
@@ -252,7 +254,7 @@ userSchema.statics.findOwnEventsE = function(idUser, activeEvents = true){
           { $unwind: "$resultingArray"}, 
           
 
-    ]
+    ];
     
     //const findEvents = User.find({_id:idUser}).aggregate(agg).
     const findEvents = User.aggregate(agg).
@@ -260,11 +262,11 @@ userSchema.statics.findOwnEventsE = function(idUser, activeEvents = true){
     //         {path:'my_events',
     //          match:{ date: { $gte: currentDate }}
     // }).
-    exec()
+    exec();
 
     //const findEvents = User.find( {'created_date':{$lte: currentDate}}).populate('my_events').exec()
-    return findEvents
-}
+    return findEvents;
+};
 
 const User = mongoose.model('User', userSchema);
 

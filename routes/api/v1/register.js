@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
 var express = require('express');
 var router = express.Router();
-const jwtAuth = require('../../../lib/jwtAuth');
+//const jwtAuth = require('../../../lib/jwtAuth');
 const {body, validationResult} = require('express-validator');
 const path = require('path');
 const pv = require('password-validator'); //control password restrictions
@@ -42,11 +42,11 @@ const upload = multer({
     fileFilter: (req,file,cb) =>{
         const ext = path.extname(file.originalname).toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-            return cb(new Error('Only images are allowed: .png|.jpg|.gif|.jpeg'))
+            return cb(new Error('Only images are allowed: .png|.jpg|.gif|.jpeg'));
         }
-        cb(null, true)
+        cb(null, true);
     },
-}).single('image')
+}).single('image');
 
 /**
  * Recording new user with validation included and image upload
@@ -67,9 +67,9 @@ router.post('/', upload,
  * Validate email, username, nickname no accept duplicates  
  */                     
             if ((typeof password != 'undefined') && !passwordSchema.validate(password)){
-                return false
+                return false;
             }else{
-                return true
+                return true;
             }
         }),
         body('email').custom(async email=>{
@@ -77,7 +77,7 @@ router.post('/', upload,
             if (resultE >0){
                 throw new Error(`Email already exists: ${email}`);
             } else {
-                return true
+                return true;
             }
         }).escape().withMessage('E-mail already exists'),
         
@@ -86,7 +86,7 @@ router.post('/', upload,
             if (resultU >0){
                 throw new Error(`Username already exists: ${username}`);
             } else {
-                return true
+                return true;
             }
         }).escape().withMessage('Username, already exists'),
         
@@ -95,7 +95,7 @@ router.post('/', upload,
             if (resultN >0){
                 throw new Error(`Nickname already exists: ${nickname}`);
             } else {
-                return true
+                return true;
             }
         }).escape().withMessage('Nickname, already exists'),
 
@@ -108,12 +108,12 @@ router.post('/', upload,
             //return res.status(422).json({ errors: errors.array()});
             return res.status(422).json({ error: errors.array()[0].msg});
         }
-        const namePhoto = req.file ? req.file.filename :''
-        const latitude = req.body.latitude ? req.body.latitude : 200
-        const longitude = req.body.longitude ? req.body.longitude : 200
-        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? [] : [longitude,latitude]
+        const namePhoto = req.file ? req.file.filename :'';
+        const latitude = req.body.latitude ? req.body.latitude : 200;
+        const longitude = req.body.longitude ? req.body.longitude : 200;
+        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? [] : [longitude,latitude];
         const newUser = await User.newUser(req.body,namePhoto,coordinates);
-        const {_id,username,nickname,location,postal_code} = newUser
+        const {_id,username,nickname,location,postal_code} = newUser;
         
         if (!location.coordinates && postal_code){
             requester.send({
@@ -123,15 +123,15 @@ router.post('/', upload,
                 idUser: _id,
             }, resultado =>{
                 if (!resultado) {
-                    console.error('Error in microservice')
+                    console.error('Error in microservice');
                 }
-            })
+            });
 
         } 
         res.status(201).json({result:{_id,username,nickname}});
     
     } catch (error) {
-        next(error)      
+        next(error);      
         }
 });
 
