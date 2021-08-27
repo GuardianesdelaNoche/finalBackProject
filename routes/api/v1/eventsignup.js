@@ -14,6 +14,8 @@ const expressValidateAssistant = require('../../../lib/expressValidateAssistant'
 const sendingMail = require('../../../lib/nodeMail');
 const { response } = require('express');
 const { language } = require('googleapis/build/src/apis/language');
+const templateEmailAssist_es = require('../../../templates_html/templateEmailAssist_es');
+const templateEmailAssist_en = require('../../../templates_html/templateEmailAssist_en');
 
 //Add user in favorite event
 router.put('/favsignup', jwtAuth,
@@ -180,19 +182,35 @@ async (req, res, next) =>{
             // return res.status(422).json({ errors: errors.array()});
             return res.status(422).json({ error: errors.array()[0].msg});
         }
-
+        const language = req.query.lang || req.headers['accept-language']||req.headers['Accept-Language']|| 'en';
         //Insert a new id_user in assistants event
         const insertassistant = await Event.add_id_assistant(idUser,req.body.eventassistants);
+        
         //TODO send an email to assistant and owner
         const {_id, _id_owner,title,date,city} = insertassistant;
         const owner = _id_owner[0];
         const {email:emailOwn} = await User.getUser(owner);
         const {email:emailUser} = await User.getUser(req.apiAuthUserId);
-        const recoverEvent = _id;
+        const nickName = await User.getNikNameByEmail(emailUser);
         let respuesta ={accepted:[]};
-        //Send an email confirm to ADD a assistant in event
-        //respuesta =  await sendingMail(emailUser,recoverEvent,'Add user in event . Prueba e-mail multi destinatario',
-        //    `<p>Add user in Event</p> <br><br> <p>El link es: <a href="${LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT}"</p> <br><p>SOLO ES UNA PRUEBA</p>`,emailOwn)
+        
+        const eventDate = date;
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        let stringDate = '';
+        let bodyConfirm = '';
+        let subject = '';
+
+        if (language.toLowerCase().includes('es')){
+            stringDate = eventDate.toLocaleDateString('es-ES', options);
+            bodyConfirm = templateEmailAssist_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            subject = 'Se ha añadido como usuario al evento: ';
+        }else{
+            stringDate = eventDate.toLocaleDateString('en-US', options);
+            bodyConfirm = templateEmailAssist_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            subject = 'Add user in event: ';        
+        };
+        
+        respuesta =  await sendingMail(emailUser,`${subject} ${title}.`,bodyConfirm,emailOwn);
         const respuestaOK = respuesta.accepted.length >0 ? 'OK':'Error email' ; 
 
         res.status(201).json({result:{_id,_id_user:req.apiAuthUserId,title,date,city,sendEmail:respuestaOK,action:'Add assistant'}});
@@ -257,10 +275,12 @@ async (req, res, next) =>{
         const owner = _id_owner[0];
         const {email:emailOwn} = await User.getUser(owner);
         const {email:emailUser} = await User.getUser(req.apiAuthUserId);
-        const recoverEvent = _id;
+        //const recoverEvent = _id;
+        const nickName = await User.getNikNameByEmail(emailUser);
         let respuesta ={accepted:[]};
+        templateEmailAssist_es(nickName,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id);
         //Send an email confirm to DELETE a assistant in event
-        //respuesta =  await sendingMail(emailUser,recoverEvent,'Delete user in event . Prueba e-mail multi destinatario',
+        //respuesta =  await sendingMail(emailUser,'Delete user in event . Prueba e-mail multi destinatario',
             // `<p>Delete user in Event</p> <br><br> <p>El link es: <a href="${LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT}${recoverEvent}"</p> <br><p>SOLO ES UNA PRUEBA</p>`,emailOwn)
         const respuestaOK = respuesta.accepted.length >0 ? 'OK':'Error email' ; 
 

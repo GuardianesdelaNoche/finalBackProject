@@ -13,7 +13,8 @@ const recoverPassController = require('../../../controllers/recoverPassControlle
 const expresValidateEmail = require('../../../lib/expressValidateEmail');
 const expressValidateUsername = require('../../../lib/expressValidateUsername');
 const expressValidateNickname = require('../../../lib/expressValidateNickname');
-const plantillaEmail_es = require('../../../lib/plantillaEmail_es');
+const templateEmail_es = require('../../../templates_html/templateEmail_es');
+const templateEmail_en = require('../../../templates_html/templateEmail_en');
 
 const User = require('../../../models/User');
 const Event = require('../../../models/Event');
@@ -67,26 +68,34 @@ router.post('/recoverpass',
             i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                // return res.status(422).json({ errors: errors.array()});
                 return res.status(422).json({ error: errors.array()[0].msg});
             }
 
             try {
+                const language = req.query.lang || req.headers['accept-language']||req.headers['Accept-Language']|| 'en';
                 //Validate id e-mail exixsts
                     const userEx = await User.getUserEmail(req.body.email);
                 if (!userEx){
                     throw new Error(i18n.__("User not exists"));
                 } 
                 const nickName = await User.getNikNameByEmail(req.body.email);
-
+                let bodyEmail = '';
+                let subject  = '';
                 const recoverToken = await recoverPassController(req.body.email);
                 if (recoverToken){
-                    const bodyEmail =  plantillaEmail_es(nickName.nickname, process.env.LINK_RECOVER_EMAIL+recoverToken);
+                    if (language.toLowerCase().includes('es')){
+                        bodyEmail = templateEmail_es(nickName.nickname, process.env.LINK_RECOVER_EMAIL+recoverToken);
+                        subject = 'Recuperación de password en 4events';
+                    } else {
+                        bodyEmail = templateEmail_en(nickName.nickname, process.env.LINK_RECOVER_EMAIL+recoverToken);
+                        subject = 'Recover password 4events.';
+                    }
+
                     //Send  email
                     // const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
                     //         `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`);
                     
-                    const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events.',bodyEmail);
+                    const respuesta =  await sendingMail(req.body.email,subject,bodyEmail);
                                    
                     if (respuesta.accepted.length>0){
                         res.status(201).json({result:'OK'});

@@ -2,7 +2,7 @@
 
 
 
-function plantillaEmail(nickName,recoverToken){
+function templateEmailAssist_es(nickName,eventLink, stringDate){
 
 const email = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -25,7 +25,7 @@ const email = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
         <td  style="padding: 30px; border-bottom: 2px solid rgb(32, 212, 137) !important">
             <h3 style="color:#171C31">Hola ${nickName},</h3>
             <p style="font-family:Arial, Helvetica, sans-serif; font-size:15px; color:#666666; line-height: 21px">
-                Te enviamos este enlace para que puedas reestablecer tu contraseña.
+                Te enviamos este email para confirmar la asistencia al evento que has elegido que se celebrará el ${stringDate}.
             </p>
 
             </br>
@@ -34,14 +34,14 @@ const email = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
                 <tbody>
                 <tr>
                     <td style=" border-bottom-width:1px; border-bottom-style:solid; border-bottom-color:#d8dbdf; color: #171C31; padding: 10px">
-                        <strong>Solicitar nueva contraseña</strong>
+                        <strong>Evento suscrito</strong>
                     </td>
                 </tr>
                 <tr>
                     <td style="font-size:14px; color: #005181; padding: 10px">
                         <strong>
                             <!-- Poner aquí: enlace a URL para reestablecer contraseña -->
-                                <a href="${recoverToken}"> Link para recuperar contraseña</a>
+                                <a href="${eventLink}"> Link para acceder al evento</a>
                             <br />
                         
                         </strong>
@@ -73,7 +73,7 @@ const email = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
     <tr>
         <td valign="top" style="padding:0px;">
             <p style="font-family:Arial, Helvetica, sans-serif; font-size:11px; color:#666666; text-align: justify; line-height: 12px; margin-top:10px;">
-                Este email ha sido enviado automáticamente, por favor, no respondas al mismo. Recibes este mensaje porque recientemente has solicitado la reestauración de tu contraseña 
+                Este email ha sido enviado automáticamente, por favor, no respondas al mismo. Recibes este mensaje porque recientemente te has suscrito a un evento
             </p>
             <br /><br />
         </td>
@@ -86,4 +86,4 @@ return email;
 
 }
 
-module.exports = plantillaEmail;
+module.exports = templateEmailAssist_es;
