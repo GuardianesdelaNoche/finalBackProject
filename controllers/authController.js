@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -8,7 +8,7 @@ class AuthController {
             const{email,password} = req.body;
 
             //Search the User in BBDD
-            const user = await User.findOne({email})
+            const user = await User.findOne({email});
 
             //if it doesn't exist, error
         

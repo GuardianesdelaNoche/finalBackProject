@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -6,7 +6,7 @@ const User = require('../models/User');
 async function recoverPassController(email){
     try{
             //Search the User in BBDD
-            const user = await User.findOne({email})
+            const user = await User.findOne({email});
             
             //if it doesn't exist, error
         
