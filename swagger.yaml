@@ -670,8 +670,25 @@ paths:
                   type: object
                   properties:
                     result:
-                      type: string
-                      format: uuid
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          format: uuid
+                        _id_user:
+                          type: string
+                          format: uuid
+                        title:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        sendEmail:
+                          type: string
+                          description: Values "OK" or "Error email"        
+                        action:
+                          type: string
+                          description: Value "Add assistant"
           '403':    
             description: The user does not have privileges for this action
           '422':
@@ -715,8 +732,25 @@ paths:
                   type: object
                   properties:
                     result:
-                      type: string
-                      format: uuid
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          format: uuid
+                        _id_user:
+                          type: string
+                          format: uuid
+                        title:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        sendEmail:
+                          type: string
+                          description: Values "OK" or "Error email"       
+                        action:
+                          type: string
+                          description: Value "Add assistant"
           '403':    
             description: The user does not have privileges for this action
           '422':
