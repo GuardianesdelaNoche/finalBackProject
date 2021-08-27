@@ -16,6 +16,8 @@ const { response } = require('express');
 const { language } = require('googleapis/build/src/apis/language');
 const templateEmailAssist_es = require('../../../templates_html/templateEmailAssist_es');
 const templateEmailAssist_en = require('../../../templates_html/templateEmailAssist_en');
+const templateEmailAssistDel_es = require('../../../templates_html/templateEmailAssistDel_es');
+const templateEmailAssistDel_en = require('../../../templates_html/templateEmailAssistDel_en');
 
 //Add user in favorite event
 router.put('/favsignup', jwtAuth,
@@ -264,7 +266,7 @@ async (req, res, next) =>{
         if (!errors.isEmpty()) {
             return res.status(422).json({ error: errors.array()[0].msg});
         }
-
+        const language = req.query.lang || req.headers['accept-language']||req.headers['Accept-Language']|| 'en';
         //Delete id_user in assistants event
         const deleteassistant = await Event.del_id_assistant(idUser,req.body.eventassistants);
         // Send an email to assistant and owner
@@ -275,16 +277,28 @@ async (req, res, next) =>{
         const owner = _id_owner[0];
         const {email:emailOwn} = await User.getUser(owner);
         const {email:emailUser} = await User.getUser(req.apiAuthUserId);
-        //const recoverEvent = _id;
+        
         const nickName = await User.getNikNameByEmail(emailUser);
         let respuesta ={accepted:[]};
-        templateEmailAssist_es(nickName,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id);
-        //Send an email confirm to DELETE a assistant in event
-        //respuesta =  await sendingMail(emailUser,'Delete user in event . Prueba e-mail multi destinatario',
-            // `<p>Delete user in Event</p> <br><br> <p>El link es: <a href="${LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT}${recoverEvent}"</p> <br><p>SOLO ES UNA PRUEBA</p>`,emailOwn)
-        const respuestaOK = respuesta.accepted.length >0 ? 'OK':'Error email' ; 
+        const eventDate = date;
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        let stringDate = '';
+        let bodyConfirm = '';
+        let subject = '';
 
-        res.status(201).json({result:{_id,_id_user:req.apiAuthUserId,title,date,city,sendEmail:respuestaOK,action:'Delete assistant'}});
+        if (language.toLowerCase().includes('es')){
+            stringDate = eventDate.toLocaleDateString('es-ES', options);
+            bodyConfirm = templateEmailAssistDel_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            subject = 'Confirmación de baja en el evento: ';
+        }else{
+            stringDate = eventDate.toLocaleDateString('en-US', options);
+            bodyConfirm = templateEmailAssistDel_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            subject = 'Confirmation of cancellation in the event: ';        
+        };
+
+            respuesta =  await sendingMail(emailUser,`${subject} ${title}.`,bodyConfirm,emailOwn);
+            const respuestaOK = respuesta.accepted.length >0 ? 'OK':'Error email' ; 
+            res.status(201).json({result:{_id,_id_user:req.apiAuthUserId,title,date,city,sendEmail:respuestaOK,action:'Delete assistant'}});
     
     } catch (error) {
      next(error);      
