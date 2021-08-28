@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
@@ -8,7 +8,7 @@ class AuthController {
             const{email,password} = req.body;
 
             //Search the User in BBDD
-            const user = await User.findOne({email})
+            const user = await User.findOne({email});
 
             //if it doesn't exist, error
         
@@ -21,7 +21,7 @@ class AuthController {
            
             //if user and password exists
             //Create a signed token
-            jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN }, (err, jwtToken) => {
+            jwt.sign({ _id: user._id, role: user.role, user_id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN }, (err, jwtToken) => {
                 if (err) {
                   next(err);
                   return;

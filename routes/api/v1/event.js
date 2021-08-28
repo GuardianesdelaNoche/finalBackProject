@@ -1,13 +1,14 @@
-'use strict'
+'use strict';
 
 const router = require('express').Router();
 const Event = require('../../../models/Event');
+const User = require('../../../models/User');
 const path = require('path');
 const multer = require('multer');
 const {body,validationResult} = require('express-validator');
 const jwtAuth = require('../../../lib/jwtAuth');
 const jwtAuthOptional = require('../../../lib/jwtAuthOptional');
-const i18n = require('../../../lib/i18nConfigure')
+const i18n = require('../../../lib/i18nConfigure');
 const storage = multer.diskStorage({
   destination : './public/images/photoEvent',
   filename: (req,file,cb) =>{
@@ -22,40 +23,40 @@ const upload = multer({
   fileFilter: (req,file,cb) =>{
       const ext = path.extname(file.originalname).toLowerCase();
       if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-          return cb(new Error(i18n.__('Only images are allowed: .png|.jpg|.gif|.jpeg')))
+          return cb(new Error(i18n.__('Only images are allowed: .png|.jpg|.gif|.jpeg')));
       }
-      cb(null, true)
+      cb(null, true);
   },
-}).single('photo')
+}).single('photo');
 
 /* GET events . */
 router.get('/',jwtAuthOptional, async function (req, res, next) {
   try {
-    const skip = parseInt(req.query.skip) || 0
-    const limit = parseInt(req.query.limit) || 100
-    const sort = req.query.sort ==='asc' ? 1 : -1
-    const filters = { date: { '$gte': new Date(Date.now())}}
-    const lat = req.query.lat? req.query.lat:null
-    const long = req.query.long? req.query.long:null
-    const distance_m = req.query.distance_m?req.query.distance_m:null
+    const skip = parseInt(req.query.skip) || 0;
+    const limit = parseInt(req.query.limit) || 100;
+    const sort = req.query.sort ==='asc' ? 1 : -1;
+    const filters = { date: { '$gte': new Date(Date.now())}};
+    const lat = req.query.lat? Number(req.query.lat):null;
+    const long = req.query.long? Number(req.query.long):null;
+    const distance_m = req.query.distance_m? Number(req.query.distance_m):null;
+    const userName = req.query.userName?req.query.userName:null;
     
     if (req.query.title) {
-      filters.title = new RegExp(req.query.title, 'i')
+      filters.title = new RegExp(req.query.title, 'i');
     }
     if (req.query.description) {
-      filters.description = new RegExp(req.query.description, 'i')
+      filters.description = new RegExp(req.query.description, 'i');
     }
 
     if (req.query.indoor) {
       const myBool = (req.query.indoor.toLowerCase() === 'true');
-      filters.indoor = myBool
-      
+      filters.indoor = myBool;
     }
     
     if (req.query.tags) {
       let tagsArr;
       if (!Array.isArray(req.query.tags)){
-          tagsArr = req.query.tags.split(',')
+          tagsArr = req.query.tags.split(',');
       } else {
           tagsArr = req.query.tags;
       }
@@ -64,33 +65,47 @@ router.get('/',jwtAuthOptional, async function (req, res, next) {
 
     if (typeof req.query.price !== 'undefined' && req.query.price !== '-') {
       if (req.query.price.indexOf('-') !== -1) {
-        filters.price = {}
-        let range = req.query.price.split('-')
+        filters.price = {};
+        let range = req.query.price.split('-');
         if (range[0] !== '') {
-          filters.price.$gte = Number(range[0])
+          filters.price.$gte = Number(range[0]);
         }
   
         if (range[1] !== '') {
-          filters.price.$lte = Number(range[1])
+          filters.price.$lte = Number(range[1]);
         }
       } else {
-        filters.price = Number(req.query.price)
+        filters.price = Number(req.query.price);
+      }
+    }
+    if (userName){
+      //First we verify that the user exists
+      const usrExist = await User.existsUserName(userName);
+      if (usrExist > 0){
+        const userN = await User.userByName(userName);
+        const {_id} = userN;
+        if (_id){
+         filters._id_owner = _id;
+        }
+      }else{
+        const error = new Error(i18n.__("User not exists"));
+        error.status = 404;
+        next(error);
+        //throw new Error(i18n.__("User not exists"))
       }
     }
     
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-    const {rows} = await Event.list(filters, skip, limit, sort, authenticate,lat,long,distance_m)
+    const {rows} = await Event.list(filters, skip, limit, sort, authenticate,lat,long,distance_m);
     const resultEnd = rows[0];
     const {total,result} = resultEnd;
     const count = total.length>0?total[0].count:0;
-    res.json({ total:count, events: result })
+    res.json({ total:count, events: result });
 
   } catch (error) { 
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
-    next(error)
+    next(error);
   }
-})
+});
 
 
 //Get one event by _id with basic data +++++++++ Not documented +++++++++++
@@ -98,19 +113,17 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const _id = req.params._id;
 
-    const event = await Event.findOne({_id:_id})
+    const event = await Event.findOne({_id:_id});
 
     if (!event) {
-      res.status(404).json({ error: 'not found' })
+      res.status(404).json({ error: 'not found' });
       return;
     } else {
-      res.json({ event })
+      res.json({ event });
     }
 
   } catch (error) { 
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
-    next(error)
+    next(error);
   }
 });
 
@@ -118,18 +131,18 @@ router.get('/:_id',jwtAuthOptional, async function (req, res, next) {
 router.get('/event/:_id',jwtAuthOptional, async function (req, res, next) {
   try {
     const eventId = req.params._id;
-    const latitude='';
-    const longitude='';
+    const lat = req.query.lat? Number(req.query.lat):null;
+    const long = req.query.long? Number(req.query.long):null;
     const authenticate = req.apiAuthUserId ? req.apiAuthUserId:'';
-    const event = await Event.listOne(authenticate,eventId,latitude,longitude)
+    const event = await Event.listOne(authenticate,eventId,lat,long);
     const resultEnd = event[0];
     const {result} = resultEnd;
     return res.status(200).json({event: result[0]});
 
   } catch (error) { 
-    next(error)
+    next(error);
   }
-})
+});
 
 
 router.post('/', jwtAuth, upload,[
@@ -173,11 +186,10 @@ router.post('/', jwtAuth, upload,[
       return req.__('The tag is required', { value, location, path });
     }
     ),
+  // eslint-disable-next-line no-unused-vars
   body('date').optional().custom((date)=>{
-    //const resultEI = await expresValidate(req);
-    
-      // 
-      return true
+    //TODO
+      return true;
   }).escape().withMessage(
     (value, { req, location, path }) => {
         return req.__('the date must be higher than now', { value, location, path });
@@ -198,20 +210,18 @@ router.post('/', jwtAuth, upload,[
 ], async (req, res, next) => {
 
   try {
-    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
+    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
     const { title, price, date, duration, indoor, address, city, postal_code, country, tags } = req.body;
 
     const description = req.body.description ? req.body.description : '';
     const max_places = req.body.max_places ? req.body.max_places : 0;
-    const latitude = req.body.latitude ? req.body.latitude :200
-    const longitude = req.body.longitude ? req.body.longitude : 200
-    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
+    const latitude = req.body.latitude ? req.body.latitude :200;
+    const longitude = req.body.longitude ? req.body.longitude : 200;
+    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude];
     const namePhoto = req.file ? req.file.filename :'dei.png';
-  
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        // return res.status(422).json({ errors: errors.array()});
         return res.status(422).json({ error: errors.array()[0].msg});
     }
     
@@ -219,18 +229,18 @@ router.post('/', jwtAuth, upload,[
                             photo: namePhoto, location: {
                               type: 'Point',
                               coordinates: coordinates
-                            }})
+                            }});
   
+    // eslint-disable-next-line no-unused-vars
     const saveResult = await event.save();
    
     //Insert register in _id_owner
-    const addId = await Event.add_id_owner (req.apiAuthUserId,event._id)
+    // eslint-disable-next-line no-unused-vars
+    const addId = await Event.add_id_owner (req.apiAuthUserId,event._id);
    
     res.status(201).json({ result: event});    
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: error.errors ? error._message : errorModify });
-    next(error)
+    next(error);
   }
 
 
@@ -243,18 +253,15 @@ router.delete('/:_id', jwtAuth, async (req, res, next) => {
     const deletedEvent = await Event.findByIdAndDelete(_id);
 
     if (!deletedEvent) {
-      res.status(404).json({ error: 'not found' })
+      res.status(404).json({ error: 'not found' });
       return;
     } {
-      const {_id} = deletedEvent
+      const {_id} = deletedEvent;
       res.status(201).json({result:_id});
-      //res.status(201).json(`${deletedEvent._id} deleted`);
     }
 
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
-    next(error)
+    next(error);
   }
 
 });
@@ -300,41 +307,43 @@ router.put('/:_id', jwtAuth, upload,[
 
   try {
     const { _id } = req.params;
-    //const { title, price, date, duration, indoor, address, city, postal_code, country , tags } = req.body;
-    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en')
-    const description = req.body.description ? req.body.description : '';
-    const max_places = req.body.max_places ? req.body.max_places : 0;
-    const namePhoto = req.file ? req.file.filename :'';
-    const latitude = req.body.latitude ? req.body.latitude : 200
-    const longitude = req.body.longitude ? req.body.longitude : 200
-    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
+    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
     
+    const latitude = req.body.latitude ? req.body.latitude : 200;
+    const longitude = req.body.longitude ? req.body.longitude : 200;
+    const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude];
+    const namePhoto = req.file ? req.file.filename :'';
+
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        //return res.status(422).json({errors: errors});
         return res.status(422).json({ error: errors.array()[0].msg});
     }
   
-    const updatedEvent = await Event
-    .findByIdAndUpdate(
-      _id, 
-      {$set: req.body},
-      { useFindAndModify: false} )
+    const isOwnOrAdmin = await Event.existsIdUserOwner(req.apiAuthUserId,_id);
+
+    //This operation can only be performed by the event owner or a super administrator
+    if(isOwnOrAdmin>0 || req.apiAuthUserRole === 9){
+      const updatedEvent = await Event.updateEvent(_id,req.body,namePhoto,coordinates);
     
-    if (!updatedEvent) {
-      res.status(404).json({ error: 'not found' });
-      return;
+      if (!updatedEvent) {
+        res.status(404).json({ error: 'not found' });
+        return;
+      }
+    
+      res.status(201).json({ result: updatedEvent });
+    
+    }else{
+      const error = new Error(i18n.__('The user does not have privileges for this action'));
+      error.status = 401;
+      next(error);
+      
     }
-  
-    res.status(201).json({ result: updatedEvent });
-  
+     
   } catch (error) {
-    // const errorModify = error.toString().split(':')[1].trim();
-    // return res.status(500).json({ message: errorModify });
-    next(error)
+    next(error);
   }
 
-})
+});
 
-module.exports = router
+module.exports = router;
