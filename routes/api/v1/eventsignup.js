@@ -204,11 +204,11 @@ async (req, res, next) =>{
 
         if (language.toLowerCase().includes('es')){
             stringDate = eventDate.toLocaleDateString('es-ES', options);
-            bodyConfirm = templateEmailAssist_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            bodyConfirm = templateEmailAssist_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id+'/'+title,stringDate);
             subject = 'Se ha añadido como usuario al evento: ';
         }else{
             stringDate = eventDate.toLocaleDateString('en-US', options);
-            bodyConfirm = templateEmailAssist_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            bodyConfirm = templateEmailAssist_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id+'/'+title,stringDate);
             subject = 'Add user in event: ';        
         };
         
@@ -288,11 +288,11 @@ async (req, res, next) =>{
 
         if (language.toLowerCase().includes('es')){
             stringDate = eventDate.toLocaleDateString('es-ES', options);
-            bodyConfirm = templateEmailAssistDel_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            bodyConfirm = templateEmailAssistDel_es(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id+'/'+title,stringDate);
             subject = 'Confirmación de baja en el evento: ';
         }else{
             stringDate = eventDate.toLocaleDateString('en-US', options);
-            bodyConfirm = templateEmailAssistDel_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id,stringDate);
+            bodyConfirm = templateEmailAssistDel_en(nickName.nickname,process.env.LINK_EMAIL_EVENTS_ADD_DEL_FAV_ASSIT+_id+'/'+title,stringDate);
             subject = 'Confirmation of cancellation in the event: ';        
         };
 

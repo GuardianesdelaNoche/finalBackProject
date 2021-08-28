@@ -891,7 +891,7 @@ paths:
                 date:
                   type: string
                   format: date-time
-                  description: values of date YYYY/MM/DD HH:MI:SS
+                  description: values of date YYYY-MM-DD HH:MI:SS
                 duration:
                   type: integer
                   description: duration value in minutes
@@ -992,7 +992,7 @@ paths:
                 date:
                   type: string
                   format: date-time
-                  description: values of date YYYY/MM/DD HH:MI:SS
+                  description: values of date YYYY-MM-DD HH:MI:SS
                 duration:
                   type: integer
                   description: duration value in minutes
