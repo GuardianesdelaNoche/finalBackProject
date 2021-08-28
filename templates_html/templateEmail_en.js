@@ -18,7 +18,7 @@ const email = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
 <table width="600" border="0" cellspacing="0" align="center" style="background-color: #ffffff;">
     <tr>
         <td style="padding: 0;">
-            <img src="http://localhost:3000/logo4eventsemail.png" alt="4events" style="width: 400px; padding-left: 100px; padding-top: 20px;">
+            <img src="https://services.4events.net/logo4eventsemail.png" alt="4events" style="width: 400px; padding-left: 100px; padding-top: 20px;">
         </td>
     </tr>
     <tr>
