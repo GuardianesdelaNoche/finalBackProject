@@ -7,6 +7,8 @@
     "loadUsers": "node ./lib/loadUsers.js",
     "dev": "cross-env PORT=3000 NODE_ENV=development DEBUG=nodeapi:* nodemon",
     "actionDB": "node ./scriptDatabase/actionDB.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent tests/tags.test.js",
+    "test:watch": "npm run test -- --watch"
     "zipService": "node ./microservices/zipToCoor.js",
     "lint": "eslint ./", 
 	  "lint:fix": "eslint ./ --fix"
@@ -41,6 +43,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "supertest": "^6.1.5"
     "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0"
   }
