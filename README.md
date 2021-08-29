@@ -4,6 +4,8 @@
 
 Our project consist create an events app to do different actions for example: share my events, check an event as favourite, filter events, chat with other members etc.
 
+We use Node version 14.17.3 and MongoDB version 4.4.6
+
 
 ## Objectives
 
@@ -92,7 +94,13 @@ This service has different endpoints and these are next:
 
 ## To try endpoints with Swagger
 
-We implement API documentation with swagger in our backend project, and you can to try this by localhost:3000/api-doc/;
+We implement API documentation with swagger in our backend project, and you can to try this by localhost:3000/api-doc/
+
+## Tests
+We implement some tests on an endpoint to get and post in the tag entity, and you can to try this by running the following command in the terminal:
+```
+npm run test:watch
+```
 
 ## Metodologies
 In this case We only use one methodology and is this: Refactoring.
