@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   dest: './public/images/photoEvent',
-  limits: {fileSize: 1 * 10000 * 10000},
+  limits: {fileSize: 1000000},
   fileFilter: (req,file,cb) =>{
       const ext = path.extname(file.originalname).toLowerCase();
       if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
@@ -215,8 +215,8 @@ router.post('/', jwtAuth, upload,[
 
     const description = req.body.description ? req.body.description : '';
     const max_places = req.body.max_places ? req.body.max_places : 0;
-    const latitude = req.body.latitude ? req.body.latitude :200;
-    const longitude = req.body.longitude ? req.body.longitude : 200;
+    const latitude = req.body.latitude ? req.body.latitude :40.41718066151606;
+    const longitude = req.body.longitude ? req.body.longitude : -3.7034247438511265;
     const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude];
     const namePhoto = req.file ? req.file.filename :'dei.png';
     

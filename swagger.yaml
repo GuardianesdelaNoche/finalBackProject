@@ -32,8 +32,9 @@ paths:
             application/json:
               schema: 
                 type: object
-                items: 
-                  type: string
+                properties:
+                  token: 
+                    type: string
         '401':    
           description: Unauthorized
         '422':

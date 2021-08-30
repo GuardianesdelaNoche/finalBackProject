@@ -45,7 +45,7 @@ passwordSchema
 const upload = multer({
     storage,
     dest: './public/images/photoUser',
-    limits: {fileSize: 1 * 10000 * 10000},
+    limits: {fileSize: 1000000},
     fileFilter: (req,file,cb) =>{
         const ext = path.extname(file.originalname).toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
