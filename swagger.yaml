@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: 4Events API
-  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  description: "<p>This is an API belonging to the 4events group that is dedicated to putting people who organize directed activities in contact with people who are looking for someone to organize them.</p><p>Here you will find everything you are looking for and you can offer any activity that you want to organize</p>"
   version: 0.1.9
 servers:
   - url: https://services.4events.net
@@ -24,20 +24,6 @@ paths:
                   type: string        
       tags:
         - Login
-      # parameters:
-      # - in: body
-      #   name: body
-      #   description: Username 
-      #   required: true
-      #   schema:
-      #     type: string
-      #     items:
-      #   description: User name
-      # - name: password
-      #   in: body
-      #   schema:
-      #     type: string
-      #   description: User password
     
       responses:
         '201':    # status code
@@ -46,33 +32,116 @@ paths:
             application/json:
               schema: 
                 type: object
-                items: 
-                  type: string
+                properties:
+                  token: 
+                    type: string
         '401':    
-          description: No coment
+          description: Unauthorized
+        '422':
+          description: Unprocessable Entinty
+
+  /api/v1/user/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              required:
+                - username
+                - email
+                - role
+                - nickname
+                - password
+              properties:
+                username:
+                  type: string
+                  minimum: 6
+                  description: Username with minimum 6 characters
+                email:
+                  type: string
+                  format: email
+                  description: Valid User e-mail
+                role:
+                  type: number
+                  minimum: 1
+                  maximum: 1
+                  default: 1
+                  description: role default 1. Only a super-administrator assign another role
+                nickname:
+                  type: string
+                  description: The nickName of user
+                password:
+                  type: string
+                  format: password
+                  minimum: 8
+                  maximum: 20
+                  description: The password require min. 1 uppercase 1 lowercase and 1 digit min 8 max 20 characters
+                image:
+                  type: string
+                  format: binary
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                phone:
+                  type: string
+                latitude: 
+                  type: number
+                  minimum: -90.0
+                  maximum: 90.0
+                longitude: 
+                  type: number
+                  minimum: -180.0
+                  maximum: 180.0
+      tags:
+        - User Register 
+
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
 
   /api/v1/users:
     get:
       security:
         - bearerAuth: []
-      summary: Returns the user decrypting the token.
+      summary: Returns the user by decrypting the token or by Id.
       parameters:
       - in: path
         name: _id 
         schema:
           type: string
+        required: true
         description: User id. Is optional. Only a super-administrator can modify a user other than himself
       - in: header
         name: x-access-token
         schema:
           type: string
-          format: uuid   
-       
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
       tags:
-        - Get User
-    
+        - Control Users
       responses:
-        '201':    # status code
+        '200':    # status code
           description: A JSON object with data
           content:
             application/json:
@@ -80,193 +149,1014 @@ paths:
                 $ref: '#/components/schemas/getUser'
         '403':    
           description: The user does not have privileges for this action
-        '404':
-          description: bb
+        '422':
+          description: Unprocessable Entinty
 
-  # /api/products:
-  #   get:
-  #     summary: Returns a list of products.
-  #     tags:
-  #       - Products
-  #     description: Returns a list of products, can be filtered by name, tag or price
-  #     parameters:
-  #     - name: skip   
-  #       in: query
-  #       schema:
-  #         type: integer
-  #       description: Number given to skip in order to paginate. By default 0, returns first page
-  #     - name: limit
-  #       in: query
-  #       schema:
-  #         type: integer
-  #       description: The number of products to return in order to paginate. By default 10      
-  #     - in: query
-  #       name: name  
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Filter by product name, it looks for a name that starts with the characters given example "Bic", you will get all products that starts with Bic
-  #     - in: query
-  #       name: tags
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Filter by product tag, example (tags=motor lifestyle) each tag must be separeted by commas ,
-  #     - in: query
-  #       name: min_price  
-  #       required: false
-  #       schema:
-  #         type: integer
-  #       description: Filter by product minimun price 
-  #     - in: query
-  #       name: max_price  
-  #       required: false
-  #       schema:
-  #         type: integer
-  #       description: Filter by product maximun price
-  #     - in: query
-  #       name: type  
-  #       required: false
-  #       schema:
-  #         type: string
-  #         enum:
-  #           - busqueda
-  #           - venta
-  #       description: Get the list with products on sale or products that people are looking for.
-  #     - in: query
-  #       name: sort  
-  #       required: false
-  #       schema:
-  #         type: string
-  #       description: Set the order of the list, put field name to order by it example "sort=name". If you use - character you get the list in desc order example "sort=-name"
+    put:
+      security:
+        - bearerAuth: []
+      summary: Modify data user by decrypting the token or by Id.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              properties:
+                username:
+                  type: string
+                  minimum: 6
+                  description: Username with minimum 6 characters
+                email:
+                  type: string
+                  format: email
+                  description: Valid User e-mail
+                role:
+                  type: number
+                  minimum: 1
+                  maximum: 1
+                  default: 1
+                  description: role default 1. Only a super-administrator assign another role
+                nickname:
+                  type: string
+                  description: The nickName of user
+                password:
+                  type: string
+                  format: password
+                  minimum: 8
+                  maximum: 20
+                  description: The password require min. 1 uppercase 1 lowercase and 1 digit min 8 max 20 characters
+                image:
+                  type: string
+                  format: binary
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                phone:
+                  type: string
+                latitude: 
+                  type: number
+                  minimum: -90.0
+                  maximum: 90.0
+                longitude: 
+                  type: number
+                  minimum: -180.0
+                  maximum: 180.0
+                  
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          required: false
+          schema:
+            type: string
+            enum:
+              - en
+              - es    
+      tags: 
+        - Control Users
       
-  #     responses:
-  #       '200':    # status code
-  #         description: A JSON array of user names
-  #         content:
-  #           application/json:
-  #             schema: 
-  #               type: array
-  #               items: 
-  #                 type: string
-  #       '400':    
-  #         description: `page`  + `num_productos_per_page` are required
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/putUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+          
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete the user by decrypting the token or by Id.
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: User id. Is optional. Only a super-administrator can modify a user other than himself
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+        required: true
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es 
+      tags:
+        - Control Users
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/RegisterUser'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
 
-  # /api/products/new:
-  #   post:
-  #     summary: Create a new product.
-  #     tags:
-  #       - Products
-  #     consumes:
-  #       - application/json
-  #     requestBody:
-  #       description: Product
-  #       required: true
-  #       content: 
-  #         application/json:
-  #           schema:
-  #             summary: An example of Product
-  #             type: object
-  #             required:
-  #               - name
-  #               - price
-  #               - sale
-  #               - picture
-  #             properties:
-  #               name:
-  #                 type: string
-  #               price:
-  #                 type: number
-  #               sale:
-  #                 type: boolean
-  #               picture:
-  #                 type: string
-  #               tags:
-  #                 type: array    
-  #                 items:
-  #                   type:string
-  #                 uniqueItems: true
-  #             example:
-  #               name: "Rain Boots"
-  #               price: 35
-  #               sale: false
-  #               picture: "./images/rain-boots.jpeg"
-  #               tags: ["lifestyle","fashion"]            
-  #     responses:
-  #       '201':    # status code
-  #         description: Product Created
+  /api/v1/users/recoverpass:
+    post:
+      summary: Recover password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      parameters: 
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es     
+      tags:
+        - Recover password
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                type: object
+                properties:
+                  result:
+                    type: string
+                    enum:
+                      - OK
+                      - KO
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+  
+  /api/v1/tags:
+    get:
+      summary: Returns the available tags.
 
-  # /api/products/{id}/update:
-  #   put:
-  #     summary: Update the product given.
-  #     tags:
-  #       - Products
-  #     parameters:
-  #       - in: path
-  #         name: id
-  #         required: true
-  #         description: The product ID
-  #     requestBody:
-  #       description: Product to be updated, can be all the fields, two or one. Whatever it is wanted. Example {"name":"nueva Bici"} {"name:"nuevaBici", price:32}
-  #       required: true        
-  #       content:
-  #         application/json:
-  #           schema:
-  #             summary: An example of Product
-  #             type: object              
-  #             properties:
-  #               name:
-  #                 type: string
-  #               price:
-  #                 type: number
-  #               sale:
-  #                 type: boolean
-  #               picture:
-  #                 type: string
-  #               tags:
-  #                 type: array
-  #                 items:
-  #                   type: string
-  #                 uniqueItems: true
-  #             example:
-  #               name: "Nueva Bici"
-  #               price: 48
-  #               sale: false
-  #               picture: "./images/Bicicleta.jpeg"
-  #               tags: ["lifestyle", "motor"]
-  #     responses:
-  #       '200':    # status code
-  #         description: Product Updated
+      tags:
+        - Get available tags
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/tags'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
 
-  # /api/products/{id}/delete:
-  #   delete:
-  #     summary: Delete the product given.
-  #     tags:
-  #       - Products
-  #     parameters:
-  #       - in: path
-  #         name: id
-  #         required: true
-  #         description: The product ID
-  #     responses:
-  #       '200':    # status code
-  #         description: Product Deleted
+  /api/v1/eventsuser/ownevent:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of events that the user owns
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
 
-  # /api/tags:
-  #   get:
-  #     summary: Returns a list of tags.
-  #     tags:
-  #       - Tags
-  #     description: Returns a list of products tags
-  #     responses:
-  #       '200':    # status code
-  #         description: A JSON array of user names
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 type: string
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+  /api/v1/eventsuser/assistant:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of assistant events
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          required: false 
+
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+  /api/v1/eventsuser/favoriteevent:
+    get:
+      security:
+        - bearerAuth: []
+      summary: List of favorite events
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: active
+          schema:
+            type: string
+          required: false
+          description: If 'true', returns the event date will be after now. If 'false' returns the event date will be before now. And default return all own events.
+        - in: query
+          name: datetype
+          schema:
+            type: string
+          required: false
+          description: If 'created_date', the sort order will be by event creation date. Default, the order is by event date
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          required: false 
+            
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+
+      tags:
+        - Get eventsuser
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+  
+  /api/v1/eventsignup/favsignup:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Sing up in favorite events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventfavorite:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+      tags: 
+        - Events sing up as favorite
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete _id user in favorite events
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventfavorite:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+      tags: 
+        - Events sing up as favorite
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+  /api/v1/eventsignup/assistsignup:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Sing up assistant event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventassistants:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+      tags: 
+        - Events sing up as assistant
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          format: uuid
+                        _id_user:
+                          type: string
+                          format: uuid
+                        title:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        sendEmail:
+                          type: string
+                          description: Values "OK" or "Error email"        
+                        action:
+                          type: string
+                          description: Value "Add assistant"
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete _id user in events assistant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventassistants:
+                  type: string
+                  format: uuid
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+      tags: 
+        - Events sing up as assistant
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          format: uuid
+                        _id_user:
+                          type: string
+                          format: uuid
+                        title:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        sendEmail:
+                          type: string
+                          description: Values "OK" or "Error email"       
+                        action:
+                          type: string
+                          description: Value "Add assistant"
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty  
+   
+  /api/v1/events:
+    get:
+      security:
+        - {}
+        - bearerAuth: []
+      summary: List of events. Only returns the event date will be after now.
+      
+      parameters:
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: If 'asc', returns the date sorted in ascending order else the order is descendig.
+        - in: query
+          name: skip
+          schema:
+            type: integer
+          required: false
+          description: Skip the events indicated in a pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Maximum events returned in a pagination.
+        - in: query
+          name: title
+          schema:
+            type: string
+          required: false
+          description: Searches by word content and is not case sensitive.
+        - in: query
+          name: description
+          schema:
+            type: string
+          required: false
+          description: Searches by word content and is not case sensitive
+        - in: query
+          name: indoor
+          schema:
+            type: string
+            enum:
+              - 'true'
+              - 'false'
+          required: false
+          description: Searches by event in indoor or outdoor
+        - in: query
+          name: tags
+          schema:
+            type: array
+            items:
+              type: string
+          required: false
+          description: Searches by event tags
+        - in: query
+          name: price
+          schema:
+            type: string
+          required: false
+          description: Supports single value 258.0 or between two values 0-258.3 Supports decimals with .   
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: distance_m
+          schema:
+            type: number
+          description: distance in meters
+          required: false 
+        - in: query
+          name: userName
+          schema:
+            type: string
+          description: User name. Filter by user events
+          required: false   
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+          required: false
+
+      tags:
+        - GET PUT and DELETE events
+
+      responses:
+          '200':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventsAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+    post:
+      security:
+        - bearerAuth: []
+      summary: Insert a new event. 
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              required:
+                - title
+                - price
+                - indoor
+                - date
+                - duration
+                - tags
+              properties:
+                title:
+                  type: string
+                  description: Title of event
+                description: 
+                  type: string
+                price: 
+                  type: number
+                max_places:
+                  type: integer
+                date:
+                  type: string
+                  format: date-time
+                  description: values of date YYYY-MM-DD HH:MI:SS
+                duration:
+                  type: integer
+                  description: duration value in minutes
+                photo:
+                  type: string
+                  format: binary
+                indoor:
+                  type: string
+                  enum:
+                    - 'true'
+                    - 'false'
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      parameters:
+        - in: header
+          name: x-access-token
+          schema:
+            type: string           
+        - in: query
+          name: lang
+          description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+          schema:
+            type: string
+            enum:
+              - en
+              - es
+
+      tags:
+      - GET PUT and DELETE events
+
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/eventsAuth'
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+    
+    put:
+      security:
+        - bearerAuth: []
+      summary: Modify an event by _id. This operation can only be performed by the event owner or a super administrator
+      
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: event _id
+      
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+      - in: query
+        name: lang
+        description: Error return language. Optional value. default value 'en' or header 'Accept-Language'
+        schema:
+          type: string
+          enum:
+            - en
+            - es
+      requestBody:
+        content:
+          multipart/form-data:
+            schema: 
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of event
+                description: 
+                  type: string
+                price: 
+                  type: number
+                max_places:
+                  type: integer
+                date:
+                  type: string
+                  format: date-time
+                  description: values of date YYYY-MM-DD HH:MI:SS
+                duration:
+                  type: integer
+                  description: duration value in minutes
+                photo:
+                  type: string
+                  format: binary
+                indoor:
+                  type: string
+                  enum:
+                    - 'true'
+                    - 'false'
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+                address:
+                  type: string
+                city:
+                  type: string
+                postal_code:
+                  type: string
+                country:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+      
+      tags:
+      - GET PUT and DELETE events
+
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+    
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete an event by _id.
+      
+      parameters:
+      - in: path
+        name: _id 
+        schema:
+          type: string
+          format: uuid
+        required: true
+        description: event _id
+      
+      - in: header
+        name: x-access-token
+        schema:
+          type: string
+      
+      tags:
+      - GET PUT and DELETE events
+
+      responses:
+        '201':    # status code
+          description: A JSON object with data
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: string
+                      format: uuid
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty  
+
+  /api/v1/events/event/:
+    get:
+      security:
+        - {}
+        - bearerAuth: []
+      summary: Only returns the event by _id.
+      
+      parameters:
+        - in: path
+          name: _id
+          schema:
+            type: string
+          required: true
+          description: Event Id.
+        - in: query
+          name: lat
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.'
+        - in: query
+          name: long
+          schema:
+            type: number
+          required: false
+          description: 'Supported format:format Decimal degrees (DD):41.40338, not commas.' 
+        - in: header
+          name: x-access-token
+          schema:
+            type: string
+      
+      tags:
+        - Get event
+
+      responses:
+          '201':    # status code
+            description: A JSON object with data
+            content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/eventAuth'
+          '403':    
+            description: The user does not have privileges for this action
+          '422':
+            description: Unprocessable Entinty
+
+  /api/v1/usersId:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Returns the users _id.
+      
+      tags:
+        - Control Users
+      responses:
+        '200':    # status code
+          description: A JSON object with data
+          content:
+              application/json:
+                schema: 
+                  type: object
+                  properties:
+                    result:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            format: uuid
+
+                      
+        '403':    
+          description: The user does not have privileges for this action
+        '422':
+          description: Unprocessable Entinty
+
+
 components:
   securitySchemes:
     bearerAuth:
@@ -280,10 +1170,12 @@ components:
       properties:
         _id:
           type: string
+          format: uuid
         username:
           type: string
         email:
           type: string
+          format: email
         address:
           type: string
         city:
@@ -343,3 +1235,241 @@ components:
             coordinates:
               $ref: '#/components/schemas/Point2D'
 
+    RegisterUser:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            _id:
+              type: string
+              format: uuid
+            username:
+              type: string
+            nickname:
+              type: string
+
+    tags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              __v:
+                type: number
+
+    eventsAuth:
+      type: object
+      properties: 
+        total:
+          type: integer
+          description: Total events with filter and without paging 
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              _id: 
+                type: string
+                format: uuid
+              tags:
+                type: array
+                items: 
+                  type: string
+              title:
+                type: string
+              description:
+                type: string
+              price:
+                type: number
+              max_places:
+                type: integer
+              date:
+                type: string
+                format: date-time
+              duration:
+                type: number
+              indoor:
+                type: boolean
+              location:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Point"
+              address:
+                type: string
+              city: 
+                type: string
+              postal_code:
+                type: string
+              country:
+                type: string
+              created_date:
+                type: string
+                format: date-time
+              detailsOwn:
+                type: object
+                properties:
+                  _id: 
+                    type: string
+                    format: uuid
+                  username: 
+                    type: string
+                    description: Show only if user is authenticated
+                  email:
+                    type: string
+                    format: email
+                    description: Show only if user is authenticated
+                  nickname: 
+                    type: string
+                  image:
+                    type: string
+                    format: uri
+              photo:
+                type: string
+                format: uri
+              assistants_count:
+                type: integer
+              favorite_events_count:
+                type: integer
+              available_places:
+                type: integer
+              event_distance:
+                type: number
+                description: Distance to event in meters.
+              isOwner:
+                type: boolean
+              isFavorite:
+                type: boolean
+              isAssistant:
+                type: boolean
+    
+    eventAuth:
+      type: object
+      properties: 
+        event:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            tags:
+              type: array
+              items: 
+                type: string
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              type: number
+            max_places:
+              type: integer
+            date:
+              type: string
+              format: date-time
+            duration:
+              type: number
+            indoor:
+              type: boolean
+            location:
+              type: array
+              items:
+                $ref: "#/components/schemas/Point"
+            address:
+              type: string
+            city: 
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+            created_date:
+              type: string
+              format: date-time
+            detailsOwn:
+              type: object
+              properties:
+                _id: 
+                  type: string
+                  format: uuid
+                username: 
+                  type: string
+                  description: Show only if user is authenticated
+                email:
+                  type: string
+                  format: email
+                  description: Show only if user is authenticated
+                nickname: 
+                  type: string
+                image:
+                  type: string
+                  format: uri
+            photo:
+              type: string
+              format: uri
+            assistants_count:
+              type: integer
+            favorite_events_count:
+              type: integer
+            available_places:
+              type: integer
+            event_distance:
+                type: number
+                description: Distance to event in meters.
+            isOwner:
+              type: boolean
+            isFavorite:
+              type: boolean
+            isAssistant:
+              type: boolean
+    putUser:
+      type: object
+      properties: 
+        event:
+          type: object
+          properties:
+            _id: 
+              type: string
+              format: uuid
+            username:
+              type: string
+            email:
+              type: string
+              format: e-mail
+            address:
+              type: string
+            city:
+              type: string
+            postal_code:
+              type: string
+            country:
+              type: string
+            role:
+              type: integer
+            phone:
+              type: string
+            nickname:
+              type: string
+            image:
+              type: string
+              format: uri
+            created_date:
+              type: string
+              format: date-time
+            location:
+              type: array
+              items:
+                $ref: "#/components/schemas/Point"
+
+
+            
+
+            
+        

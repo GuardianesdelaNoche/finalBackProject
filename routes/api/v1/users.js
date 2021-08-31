@@ -1,5 +1,6 @@
-'use strict'
-
+/* eslint-disable no-unused-vars */
+'use strict';
+const i18n = require('../../../lib/i18nConfigure');
 var express = require('express');
 var router = express.Router();
 const jwtAuth = require('../../../lib/jwtAuth');
@@ -9,15 +10,17 @@ const pv = require('password-validator'); //control password restrictions
 const multer = require('multer');
 const sendingMail = require('../../../lib/nodeMail');
 const recoverPassController = require('../../../controllers/recoverPassController');
-const expresValidateEmail = require('../../../lib/expressValidateEmail')
-const expressValidateUsername = require('../../../lib/expressValidateUsername')
-const expressValidateNickname = require('../../../lib/expressValidateNickname')
-//const fs = require('fs');
+const expresValidateEmail = require('../../../lib/expressValidateEmail');
+const expressValidateUsername = require('../../../lib/expressValidateUsername');
+const expressValidateNickname = require('../../../lib/expressValidateNickname');
+const templateEmail_es = require('../../../templates_html/templateEmail_es');
+const templateEmail_en = require('../../../templates_html/templateEmail_en');
 
 const User = require('../../../models/User');
-const Event = require('../../../models/Event')
+const Event = require('../../../models/Event');
 const { route } = require('./event');
 const { response } = require('express');
+const { language } = require('googleapis/build/src/apis/language');
 
 const passwordSchema = new pv();
 passwordSchema
@@ -42,45 +45,69 @@ passwordSchema
 const upload = multer({
     storage,
     dest: './public/images/photoUser',
-    limits: {fileSize: 1 * 10000 * 10000},
+    limits: {fileSize: 1000000},
     fileFilter: (req,file,cb) =>{
         const ext = path.extname(file.originalname).toLowerCase();
         if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-            return cb(new Error('Only images are allowed: .png|.jpg|.gif|.jpeg'))
+            return cb(new Error(i18n.__('Only images are allowed: .png|.jpg|.gif|.jpeg')));
         }
-        cb(null, true)
+        cb(null, true);
     },
-}).single('image')
+}).single('image');
 
 
 //recover Password
 router.post('/recoverpass', 
-        [body('email').isEmail().escape().withMessage('Data, incorrect format')] ,async(req,res,next) => {
-    
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array()});
-    }
+        [body('email').isEmail().escape().withMessage(
+            (value, { req, location, path }) => {
+                return req.__('Data, incorrect format', { value, location, path });
+              }
+        )
+        ] 
+        ,async(req,res,next) => {
+            i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(422).json({ error: errors.array()[0].msg});
+            }
 
-    try {
-       //Validate id e-mail exixsts
-        const userEx = await User.getUserEmail(req.body.email)
-    if (!userEx){
-        throw new Error(`User not exists`)
-    } 
-    const recoverToken = await recoverPassController(req.body.email);
-    if (recoverToken){
-        //Send  email
-      const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
-                `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`)
-                
-        res.status(201).json({result:respuesta});
-    }
+            try {
+                const language = req.query.lang || req.headers['accept-language']||req.headers['Accept-Language']|| 'en';
+                //Validate id e-mail exixsts
+                    const userEx = await User.getUserEmail(req.body.email);
+                if (!userEx){
+                    throw new Error(i18n.__("User not exists"));
+                } 
+                const nickName = await User.getNikNameByEmail(req.body.email);
+                let bodyEmail = '';
+                let subject  = '';
+                const recoverToken = await recoverPassController(req.body.email);
+                if (recoverToken){
+                    if (language.toLowerCase().includes('es')){
+                        bodyEmail = templateEmail_es(nickName.nickname, process.env.LINK_RECOVER_EMAIL+recoverToken);
+                        subject = 'Recuperación de password en 4events';
+                    } else {
+                        bodyEmail = templateEmail_en(nickName.nickname, process.env.LINK_RECOVER_EMAIL+recoverToken);
+                        subject = 'Recover password 4events.';
+                    }
 
+                    //Send  email
+                    // const respuesta =  await sendingMail(req.body.email,recoverToken,'Recover password 4events. Prueba e-mail multi destinatario',
+                    //         `<p>Recover the password by link</p> <br><br> <p>El link es: <a href="${process.env.LINK_RECOVER_EMAIL}${recoverToken}"</p> <br><p>SOLO ES UNA PRUEBA</p>`);
+                    
+                    const respuesta =  await sendingMail(req.body.email,subject,bodyEmail);
+                                   
+                    if (respuesta.accepted.length>0){
+                        res.status(201).json({result:'OK'});
+                    } else {
+                        res.status(422).json({result:'KO'});
+                    }
+                    //res.status(201).json({result:respuesta});
+                }
 
-    } catch (error) {
-        next(error);
-    }
+            } catch (error) {
+                next(error);
+            }
 
 });
 
@@ -88,27 +115,33 @@ router.post('/recoverpass',
 //Get any user by super administrator or own 
 router.get('/:id_user?', jwtAuth, async function(req,res,next){
     try {
-        const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
-        
+        const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId;
+        i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
+
         if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
-            const resultUserId = await User.getUser(idUser)
+            const resultUserId = await User.getUser(idUser);
             const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,location} = resultUserId;
             return res.status(200).json({result: {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,location}});
         }  else{
-            const err = new Error(`The user does not have privileges for this action`);
-            err.status = 403
-            throw err
+            
+            const err = new Error(
+                i18n.__('The user does not have privileges for this action')
+            );
+            err.status = 403;
+            throw err;
         }  
     } catch (error) {
         next(error);
     }
-})
-
+});
 
 //Delete user
 router.delete('/:id_user?', jwtAuth, async function(req,res,next){
+    
     try {
-        const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
+        const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId;
+        i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
+
         if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
             const delFavoriteEvents = await Event.del_id_favorites(idUser);
             const delAssistants = await Event.del_id_assistants(idUser);
@@ -123,11 +156,16 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
             
             const deleteUser = await User.deleteUser(idUser);
 
-            return res.status(200).json({result: `Successful deletion: ${idUser}`});     
+            // return res.status(200).json({result: `${i18n.__('Successful deletion: ')} ${idUser}`});
+            //return res.status(200).json({result: deleteUser});
+
+            const {_id,username,nickname} = deleteUser;
+            res.status(201).json({result:{_id,username,nickname}});
+            
         }else{
-            const err = new Error(`The user does not have privileges for this action`);
-            err.status = 403
-            throw err
+            const err = new Error(i18n.__('The user does not have privileges for this action'));
+            err.status = 403;
+            throw err;
         }
         
     } catch (error) {
@@ -144,85 +182,124 @@ router.delete('/:id_user?', jwtAuth, async function(req,res,next){
 
  router.put('/:id_user?', jwtAuth, upload,
  [
-     body('username').optional().isLength({ min: 6 }).escape().withMessage('The username min 6 characters'),
-     body('email').optional().isEmail().escape().withMessage('Email, incorrect format'),
-     body('role').optional().isNumeric().withMessage('The role must be numeric'),
-     body('nickname').optional().not().isEmpty().trim().escape().withMessage('The nickname is required'),
-     body('latitude').optional().isNumeric().withMessage('The latitude must be numeric'),
-     body('longitude').optional().isNumeric().withMessage('The longitude must be numeric'),
+     body('username').optional().isLength({ min: 6 }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The username min 6 characters', { value, location, path });
+          }
+         ),
+     body('email').optional().isEmail().escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Email, incorrect format', { value, location, path });
+          }
+         ),
+     body('role').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The role must be numeric', { value, location, path });
+          }
+          ),
+     body('nickname').optional().not().isEmpty().trim().escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The nickname is required', { value, location, path });
+          }
+          ),
+     body('latitude').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The latitude must be numeric', { value, location, path });
+          }
+          ),
+     body('longitude').optional().isNumeric().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('The longitude must be numeric', { value, location, path });
+          }
+          ),
      body('password').optional().custom(password => {   
 /**
 * Validate password, minimum requirements.
 * Validate email, username, nickname no accept duplicates  
 */                     
          if ((typeof password != 'undefined') && !passwordSchema.validate(password)){
-             return false
+             return false;
          }else{
-             return true
+             return true;
          }
      }),
      body('email').optional().custom(async(email,{req})=>{
         const resultEI = await expresValidateEmail(req);
         
          if (resultEI.resultE>0 && resultEI.resultE_Id===0){
-             throw new Error(`Email already exists: ${email}`);
+             throw new Error(i18n.__('E-mail already exists'));
          } else {
-             return true
+             return true;
          }
-     }).escape().withMessage('E-mail already exists'),
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('E-mail already exists', { value, location, path });
+          }
+        ),
      
      body('username').optional().custom(async (username,{req})=>{
-        const resultUI = await expressValidateUsername(req)
+        const resultUI = await expressValidateUsername(req);
 
          if (resultUI.resultU >0 && resultUI.resultU_Id===0){
-             throw new Error(`Username already exists: ${username}`);
+             throw new Error(i18n.__('Username, already exists'));
          } else {
-             return true
+             return true;
          }
-     }).escape().withMessage('Username, already exists'),
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Username, already exists', { value, location, path });
+          }
+        ),
      
      body('nickname').optional().custom(async (nickname, {req})=>{
-         const resultNI = await expressValidateNickname(req)
+         const resultNI = await expressValidateNickname(req);
 
          if (resultNI.resultN >0 && resultNI.resultN_Id===0){
-             throw new Error(`Nickname already exists: ${nickname}`);
+             throw new Error(i18n.__('Nickname, already exists'));
          } else {
-             return true
+             return true;
          }
-     }).escape().withMessage('Nickname, already exists'),
-
-     
+     }).escape().withMessage(
+        (value, { req, location, path }) => {
+            return req.__('Nickname, already exists', { value, location, path });
+          }
+        ),    
  ], 
 async (req, res, next) =>{
  try {
-    const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId
+    const idUser = req.params.id_user ? req.params.id_user:req.apiAuthUserId;
+    i18n.setLocale(req.headers['accept-language']||req.headers['Accept-Language']|| req.query.lang || 'en');
     if ((req.apiAuthUserRole===9 && req.params.id_user) || !req.params.id_user){
         req.body.idActiveUser = idUser;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(422).json({ errors: errors.array()});
+            //return res.status(422).json({ errors: errors.array()});
+            return res.status(422).json({ error: errors.array()[0].msg});
         }
-        const namePhoto = req.file ? req.file.filename :''
-        const latitude = req.body.latitude ? req.body.latitude :200
-        const longitude = req.body.longitude ? req.body.longitude : 200
-        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude]
+        const namePhoto = req.file ? req.file.filename :'';
+        const latitude = req.body.latitude ? req.body.latitude :200;
+        const longitude = req.body.longitude ? req.body.longitude : 200;
+        const coordinates = (longitude>180.0 ||  longitude<-180.0)  && (latitude>90.0 || latitude<-90.0) ? []:[longitude,latitude];
         const updateUser = await User.updateUser(idUser,req.body,namePhoto,coordinates);
         
-        const {_id,username,nickname,email} = updateUser
-        res.status(201).json({result:{_id,username,nickname,email}});
+        const {_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location} = updateUser;
         
+        
+        res.status(201).json({result:{_id,username,email,address,city,postal_code,country,role,phone,nickname,image,created_date,location}});
+        
+        
+
+
     }else{
-        const err = new Error(`The user does not have privileges for this action`);
-        err.status = 403
-        throw err
+        const err = new Error(i18n.__('The user does not have privileges for this action'));
+        err.status = 403;
+        throw err;
     }
  
  } catch (error) {
-     next(error)      
+     next(error);      
     }
 });
-
-
 
 
 module.exports = router;
