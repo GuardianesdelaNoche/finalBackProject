@@ -15,6 +15,6 @@ module.exports = async function initTags() {
 
         await Tag.insertMany(tags);
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
+};
