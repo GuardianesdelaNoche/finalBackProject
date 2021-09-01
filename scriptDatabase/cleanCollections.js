@@ -7,6 +7,6 @@ module.exports = async function removeCollection() {
         const { deletedCount } = await Event.deleteMany();
         console.log(`Deleted ${deletedCount} event.`);
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
+};

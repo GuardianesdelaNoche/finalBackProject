@@ -27,9 +27,9 @@ module.exports = async function initUsers() {
             }
         ]);
     
-        console.log(`Inserted ${users.length} user${users.length > 1 ? 's' : ''}.`)
+        console.log(`Inserted ${users.length} user${users.length > 1 ? 's' : ''}.`);
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-  }
+  };
   

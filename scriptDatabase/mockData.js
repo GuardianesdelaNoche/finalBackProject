@@ -32,7 +32,7 @@ const Event = require('../models/Event');
         
             await newEvent.save();
         }    
-            console.log('done mock')
+            console.log('done mock');
     } catch (error) {
         console.log(error);
     }

@@ -2,10 +2,10 @@
 const removeCollection = require('./cleanCollections');
 const toMockData = require('./mockData');
 const initTags = require('./initTags');
-const initUsers = require('./initUser')
+const initUsers = require('./initUser');
 const db = require('../lib/connectMongoose');
 
-actionDB()
+actionDB();
 
 function actionDB() {
     try {
@@ -26,7 +26,7 @@ function actionDB() {
                 switch (action) {
                     case "1":
                         await removeCollection();
-                        db.close()
+                        db.close();
                         finishProgram();
                         break;
                     case "2":
@@ -52,7 +52,7 @@ function actionDB() {
                         break;
                 }
             });
-            },1000)
+            },1000);
     } catch (error) {
         console.log(error);
     }
